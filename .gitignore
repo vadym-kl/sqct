@@ -1,0 +1,13 @@
+*.aux
+*.*~
+CMakeCache.txt
+CMakeLists.txt.user
+*.o
+*.dir
+CMakeFiles
+Makefile
+*.cmake
+*.cbp
+out
+doc
+sqct

@@ -1,0 +1,39 @@
+cmake_minimum_required (VERSION 2.6)
+project (sqct)
+add_definitions("-std=c++0x")
+set( CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+add_executable(sqct
+ hprhelpers.cpp
+ resring.cpp
+ rint.cpp
+ matrix2x2.cpp
+ vector2.cpp
+ vector3hpr.cpp
+ output.cpp
+
+ numbersgen.cpp
+ gatelibrary.cpp
+ optsequencegenerator.cpp
+ seqlookupcliff.cpp
+ exactdecomposer.cpp
+
+ epsilonnet.cpp
+ netgenerator.cpp
+ unitaryapproximator.cpp
+ gcommdecomposer.cpp
+ sk.cpp
+
+ numbers-stat.cpp
+ theoremverification.cpp
+ toptimalitytest.cpp
+ hoptimalitytest.cpp
+
+ main.cpp
+)
+
+set(BOOST_LIBS program_options chrono timer system)
+find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
+
+target_link_libraries(sqct ${Boost_LIBRARIES})
+target_link_libraries(sqct gmpxx gmp mpfr)
