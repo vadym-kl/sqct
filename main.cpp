@@ -138,7 +138,7 @@ struct ApplicationResult
         ofs << "# Computed by SQCT, based on arXiv:1206.5236" << endl;
         ofs << "# Published at: http://code.google.com/p/sqct/" << endl;
         ofs << "# Symbolic form of unitary to approximate:" << symbolic_form << endl;
-        ofs << "# Distance between unitary and approximation" << dst << endl;
+        ofs << "# Distance between unitary and approximation:" << dst << endl;
         ofs << "# (Formula (1) in http://arxiv.org/abs/quant-ph/0411206)" << endl;
         ofs << "# Total number of gates:" << tc + hc + pc + plc << endl;
         ofs << "# T and T^{Dagger} gates:" << tc << endl;
