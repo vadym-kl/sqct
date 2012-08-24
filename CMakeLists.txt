@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project (sqct)
 add_definitions("-std=c++0x")
 set( CMAKE_CXX_FLAGS_RELEASE "-O3")
-set( CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc")
+set( CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
 
 add_executable(sqct
  hprhelpers.cpp
@@ -37,4 +37,4 @@ set(BOOST_LIBS program_options timer chrono system)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 
 target_link_libraries(sqct ${Boost_LIBRARIES})
-target_link_libraries(sqct mpfr gmpxx gmp)
+target_link_libraries(sqct mpfr gmpxx gmp rt)
