@@ -3,6 +3,7 @@ project (sqct)
 add_definitions("-std=c++0x")
 set( CMAKE_CXX_FLAGS_RELEASE "-O3")
 set( CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
+set(Boost_USE_STATIC_LIBS ON)
 
 add_executable(sqct
  hprhelpers.cpp
