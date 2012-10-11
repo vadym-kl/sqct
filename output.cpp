@@ -1,20 +1,20 @@
 //     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com, Dmitri Maslov, Michele Mosca
 //
 //     This file is part of SQCT.
-// 
+//
 //     SQCT is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Lesser General Public License as published by
 //     the Free Software Foundation, either version 3 of the License, or
 //     (at your option) any later version.
-// 
+//
 //     SQCT is distributed in the hope that it will be useful,
 //     but WITHOUT ANY WARRANTY; without even the implied warranty of
 //     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //     GNU Lesser General Public License for more details.
-// 
+//
 //     You should have received a copy of the GNU Lesser General Public License
 //     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
 #include "output.h"
 #include "resring.h"
@@ -62,8 +62,8 @@ std::ostream& operator<<(std::ostream& out, const vector2<TInt>& v )
 template < class TInt >
 std::ostream& operator<<(std::ostream& out, const matrix2x2<TInt>& A )
 {
-  out << "matrix2x2[{{" << A.d[0][0] <<","<< A.d[0][1] <<"}," <<std::endl;
-  out << " {" << A.d[1][0] <<","<< A.d[1][1] <<"}," << A.de << "}]";
+  out << "# matrix2x2[{{" << A.d[0][0] <<","<< A.d[0][1] <<"}," <<std::endl;
+  out << "#            {" << A.d[1][0] <<","<< A.d[1][1] <<"}," << A.de << "}]";
   return out;
 }
 

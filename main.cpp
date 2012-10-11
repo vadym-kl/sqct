@@ -66,7 +66,7 @@ struct SKOptions
 /// \brief Result of application of the SK algorithm
 struct ApplicationResult
 {
-    circuit c;  ///< Cicrcuit
+    circuit c;  ///< Circuit
     int hc;     ///< Hadamard counts
     int tc;     ///< T and inverse of T gates counts
     int pc;     ///< Phase and inverse of Phase gate counts
@@ -79,6 +79,8 @@ struct ApplicationResult
     int denom_reduction; ///< Difference between \f$ sde(|\cdot|^2) \f$
                          /// before and after conversion to canonical form
     int denom ; ///< \f$ sde(|\cdot|^2) \f$ of resulting unitary
+    matrix2x2<mpz_class> exact_uni; /// exact unitary corresponding to the circuit c
+
 
     /// \brief Summarize gate statistics for Clifford + T library
     void updateForCliffordT()
@@ -151,6 +153,7 @@ struct ApplicationResult
         ofs << "# Decomposition time(seconds):" << tdecomp << endl;
         ofs << "# Reduction:" << denom_reduction << endl;
         ofs << "# sde(abs(z)^2):" << denom << endl;
+        ofs << "# Exact unitary:" << endl << exact_uni << endl;
 
         ofs << ".v 1" << endl;
         ofs << ".i 1" << endl;
@@ -194,6 +197,7 @@ public:
         int gde_after = res.min_gde_abs2();
         ar.denom_reduction = gde_before - gde_after;
         ar.denom = res.max_sde_abs2();
+        ar.exact_uni = res;
 
         {
             boost::timer::auto_cpu_timer t;
@@ -208,6 +212,7 @@ public:
         ar.tdecomp = (double) ct2.wall * 1e-9;
         ar.nr = recursion_level;
         ar.updateForCliffordT();
+
     }
 
     /// \brief Process input file defined by opt taking into account specified options
