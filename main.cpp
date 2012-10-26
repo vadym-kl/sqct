@@ -571,6 +571,37 @@ struct RotationGeneratorApp
 };
 
 ////////////////////////////////////////////////////////////////////
+struct exactDecompositionOpts
+{
+  std::string filename;
+};
+
+////////////////////////////////////////////////////////////////////
+struct exactDecompositionApplication
+{
+  exactDecompositionApplication( const exactDecompositionOpts& opts ) :
+    m_opts(opts)
+  {
+  }
+
+  void run()
+  {
+    ifstream ifs;
+    ifs.exceptions(std::fstream::badbit | std::fstream::failbit);
+    ifs.open(m_opts.filename);
+    matrix2x2<mpz_class> exact_uni;
+    circuit c;
+    ifs >> exact_uni;
+    cout << exact_uni << endl;
+    ed.decompose(exact_uni,c);
+    c.toStream(cout);
+  }
+
+  exactDecompositionOpts m_opts;
+  exactDecomposer ed;
+};
+
+////////////////////////////////////////////////////////////////////
 
 void print_about_message()
 {
@@ -619,6 +650,8 @@ int main(int ac, char* av[])
     ResynthOptions ro;
     // randomized rotations
     RandomRotationsOpts rro;
+    // exact decomposition
+    exactDecompositionOpts edo;
 
     try {
 
@@ -682,6 +715,9 @@ int main(int ac, char* av[])
             ("random-rot", po::value< int >(&(rro.samples)),
              "Generates file with specified number of random rotations.")
 
+            ("exact", po::value< string >(&(edo.filename)),
+             "Performs an exact decomposition of a unitary over the ring.")
+
             ("about", "Information about the program.")
         ;
 
@@ -740,6 +776,12 @@ int main(int ac, char* av[])
                 app.process();
             }
             return 0;
+        }
+
+        if( vm.count("exact") ) {
+          exactDecompositionApplication eda(edo);
+          eda.run();
+          return 0;
         }
 
         if ( true ) {
