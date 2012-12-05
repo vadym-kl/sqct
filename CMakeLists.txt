@@ -37,5 +37,7 @@ add_executable(sqct
 set(BOOST_LIBS program_options timer chrono system)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 
+message("XXX ${Boost_LIBRARIES}")
+
 target_link_libraries(sqct ${Boost_LIBRARIES})
-target_link_libraries(sqct mpfr gmpxx gmp rt)
+target_link_libraries(sqct gomp pthread mpfr gmpxx gmp rt)
