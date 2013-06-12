@@ -16,15 +16,15 @@
 //     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "sk.h"
-#include "exactdecomposer.h"
-#include "gcommdecomposer.h"
+#include "sk/sk.h"
+#include "sk/gcommdecomposer.h"
+#include "es/exactdecomposer.h"
 
-#include "theoremverification.h"
-#include "toptimalitytest.h"
-#include "hoptimalitytest.h"
+#include "theory/theoremverification.h"
+#include "theory/toptimalitytest.h"
+#include "theory/hoptimalitytest.h"
 
-#include "netgenerator.h"
+#include "sk/netgenerator.h"
 
 #include "output.h"
 

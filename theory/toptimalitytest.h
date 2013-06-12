@@ -19,7 +19,7 @@
 #ifndef TOPTIMALITYTEST_H
 #define TOPTIMALITYTEST_H
 
-#include "optsequencegenerator.h"
+#include "es/optsequencegenerator.h"
 #include "gatelibrary.h"
 
 /// \brief Performes check of the conjecture of the T optimality of exact

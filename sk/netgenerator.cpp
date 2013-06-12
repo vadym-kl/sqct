@@ -17,7 +17,7 @@
 // 
 
 #include "netgenerator.h"
-#include "numbersgen.h"
+#include "es/numbersgen.h"
 #include "epsilonnet.h"
 
 #include <memory>

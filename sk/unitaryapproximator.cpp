@@ -23,7 +23,7 @@
 #include <ctime>
 #include <cassert>
 #include <fstream>
-#include "exactdecomposer.h"
+#include "es/exactdecomposer.h"
 
 using namespace std;
 

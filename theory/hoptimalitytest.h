@@ -19,7 +19,7 @@
 #ifndef HOPTIMALITYTEST_H
 #define HOPTIMALITYTEST_H
 
-#include "optsequencegenerator.h"
+#include "es/optsequencegenerator.h"
 #include "gatelibrary.h"
 
 /// \brief Performs brute force check required for proof of

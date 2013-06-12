@@ -19,7 +19,7 @@
 #ifndef NUMBERSSTAT_H
 #define NUMBERSSTAT_H
 
-#include "numbersgen.h"
+#include "es/numbersgen.h"
 #include <vector>
 #include <limits>
 #include <iostream>

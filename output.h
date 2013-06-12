@@ -27,7 +27,7 @@
 #include "vector2.h"
 #include "rint.h"
 #include "resring.h"
-#include "exactdecomposer.h"
+#include "es/exactdecomposer.h"
 
 /// \brief Outputs x to stream out in Mathematica friendly form
 template < int Tmod >
