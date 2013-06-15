@@ -1,20 +1,20 @@
 //     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com, Dmitri Maslov, Michele Mosca
 //
 //     This file is part of SQCT.
-// 
+//
 //     SQCT is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Lesser General Public License as published by
 //     the Free Software Foundation, either version 3 of the License, or
 //     (at your option) any later version.
-// 
+//
 //     SQCT is distributed in the hope that it will be useful,
 //     but WITHOUT ANY WARRANTY; without even the implied warranty of
 //     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //     GNU Lesser General Public License for more details.
-// 
+//
 //     You should have received a copy of the GNU Lesser General Public License
 //     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
 #ifndef EXACTDECOMPOSER_H
 #define EXACTDECOMPOSER_H
@@ -30,7 +30,9 @@ public:
     /// \brief Initializes generators
     exactDecomposer();
     /// \brief Decomposes matr into circuit c
-    void decompose( const matrix2x2<mpz_class> &matr, circuit& c );
+    void decompose( const matrix2x2<mpz_class> &matr, circuit& c ) const;
+    static circuit decompose( const matrix2x2<mpz_class> &matr );
+    static const exactDecomposer& instance();
 private:
     /// \brief Matrix over the ring type used during decomposition
     typedef matrix2x2<mpz_class> M;
@@ -43,7 +45,7 @@ private:
     /// \brief Inverses of generators used for decomposition
     M generators_ctr[gen_count];
     /// \brief Object of class to lookup T-optimal sequences for unitaries with \f$ sde(|\cdot|^2) < 4 \f$
-    seqLookupCliff slC;
+    mutable seqLookupCliff slC;
 };
 
 #endif // EXACTDECOMPOSER_H

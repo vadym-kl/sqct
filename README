@@ -20,3 +20,9 @@ the version of Solovay Kitaev algorithm described in http://arxiv.org/abs/quant-
 In addition to Boost, The GNU Multiple Precision Arithmetic Library, The GNU MPFR Library the library 
 mpfr::real by Christian Schneider <software(at)chschneider(dot)eu> is used for high precision
 floating point arithmetic. 
+
+DIRECTORY STRUCTURE 
+sk -- implementation of the Solovay-Kitaev algorithm
+es -- exact synthesis algorithm
+theory -- numerical proof of result from arXiv:1206.5236, tests of exact synthesis algorithm 
+appr -- optimal round off of unitaries

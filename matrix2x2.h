@@ -1,20 +1,20 @@
 //     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com, Dmitri Maslov, Michele Mosca
 //
 //     This file is part of SQCT.
-// 
+//
 //     SQCT is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Lesser General Public License as published by
 //     the Free Software Foundation, either version 3 of the License, or
 //     (at your option) any later version.
-// 
+//
 //     SQCT is distributed in the hope that it will be useful,
 //     but WITHOUT ANY WARRANTY; without even the implied warranty of
 //     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //     GNU Lesser General Public License for more details.
-// 
+//
 //     You should have received a copy of the GNU Lesser General Public License
 //     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
 #ifndef MATRIX2X2_H
 #define MATRIX2X2_H
@@ -63,8 +63,12 @@ struct matrix2x2
     int reduce(int number);
     /// \brief Matrix complexity measure
     int max_sde_abs2() const;
+    /// \brief Number of T gates in optimal circuit
+    int t() const;
+    /// \brief Number of H gates in optimal circuit
+    int h() const;
     /// \brief Multiplies by \f$ T^k H \f$
-    void mul_TkH( int k, matrix2x2<TInt>& out );
+    void mul_TkH( int k, matrix2x2<TInt>& out ) const;
 
     /// \brief Returns T^power, where T is a unitary correspoding to T gate
     static matrix2x2<TInt> T( int power = 1 );
@@ -86,7 +90,7 @@ struct matrix2x2
     template < class T >
     matrix2x2( const matrix2x2<T>& val );
     /// \brief Returns conjugate transpose of the matrix
-    matrix2x2<TInt> conjugateTranspose();
+    matrix2x2<TInt> conjugateTranspose() const;
 
     /// \brief Returns true if matrix is unitary
     bool is_unitary() const;
@@ -172,10 +176,20 @@ matrix2x2hpr operator*( const matrix2x2hpr::mpclass& val, const matrix2x2hpr& rh
 matrix2x2hpr operator*( const matrix2x2hpr::scalar& val, const matrix2x2hpr& rhs );
 
 /// \brief Trace distance between two matrices, \see Formula (1) in http://arxiv.org/abs/quant-ph/0411206
-double trace_dist( const matrix2x2hpr& a, const matrix2x2hpr& b );
+double long trace_dist( const matrix2x2hpr& a, const matrix2x2hpr& b );
+
+/// \brief Distance induced by operator norm
+double operator_dist( const matrix2x2hpr& a, const matrix2x2hpr& b );
+
+/// \brief Distance induced by operator norm
+long double frob_dist( const matrix2x2hpr& a, const matrix2x2hpr& b );
 
 /// \brief Converts high precision complex matrix to machine precision complex matrix
 void convert(const matrix2x2hpr& in, matrix2x2cd &out);
+
+void RzTh( const hprr& theta, matrix2x2hpr& target );
+matrix2x2hpr RzTh( const hprr& theta );
+matrix2x2hpr Rz( const hprr& phi );
 
 
 #endif // MATRIX2X2_H

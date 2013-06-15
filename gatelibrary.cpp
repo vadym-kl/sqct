@@ -1,20 +1,20 @@
 //     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com, Dmitri Maslov, Michele Mosca
 //
 //     This file is part of SQCT.
-// 
+//
 //     SQCT is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Lesser General Public License as published by
 //     the Free Software Foundation, either version 3 of the License, or
 //     (at your option) any later version.
-// 
+//
 //     SQCT is distributed in the hope that it will be useful,
 //     but WITHOUT ANY WARRANTY; without even the implied warranty of
 //     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //     GNU Lesser General Public License for more details.
-// 
+//
 //     You should have received a copy of the GNU Lesser General Public License
 //     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
 #include "gatelibrary.h"
 #include "output.h"
@@ -24,18 +24,18 @@
 using namespace std;
 
 gateLibrary::gateLibrary() :
-    name(GLw7 + 1), name_qc(GLw7 + 1),
-    matrix_str( GLw7 + 1), matrix( GLw7 + 1),
-    inverse(GLw7 + 1), cost( GLw7 + 1,0 )
+    name(GLw7 + 10), name_qc(GLw7 + 10),
+    matrix_str( GLw7 + 10), matrix( GLw7 + 10),
+    inverse(GLw7 + 10), cost( GLw7 + 10,0 )
 {
-    name[Id] = "Id";
+    name[Id] = "";
     name[T] = "T";
     name[P] = "P";
-    name[TP] = "Td Z";
+    name[TP] = "T*Z";
     name[Z] = "Z";
-    name[TZ] = "T Z";
-    name[Pd] = "Pd";
-    name[Td] = "Td";
+    name[TZ] = "TZ";
+    name[Pd] = "P*";
+    name[Td] = "T*";
     name[H] = "H";
     name[X] = "X";
     name[Y] = "Y";
@@ -63,11 +63,11 @@ gateLibrary::gateLibrary() :
     matrix_str[Id] = "Id";
     matrix_str[T] = "T";
     matrix_str[P] = "P";
-    matrix_str[TP] = "Td.Z";
+    matrix_str[TP] = "T*.Z";
     matrix_str[Z] = "Z";
     matrix_str[TZ] = "T.Z";
-    matrix_str[Pd] = "Pd";
-    matrix_str[Td] = "Td";
+    matrix_str[Pd] = "P*";
+    matrix_str[Td] = "T*";
     matrix_str[H] = "H";
     matrix_str[X] = "X";
     matrix_str[Y] = "Y";
@@ -130,6 +130,9 @@ gateLibrary::gateLibrary() :
     symbols['H'] = H;
     symbols['h'] = H;
 
+    symbols['I'] = Id;
+    symbols['i'] = Id;
+
     cost[Td] = cost[T] = 1000;
     cost[H] = 10;
     cost[P] = cost[Pd] = 40;
@@ -170,7 +173,7 @@ void circuit::convert(circuit::m& res) const
     const circuit& c = *this;
     static const gateLibrary& gl = gateLibrary::instance();
     res = gl.matrix[gl.Id];
-    for( int i = 0; i < size(); ++i )
+    for( size_t i = 0; i < size(); ++i )
     {
        m tmp = gl.matrix[ c[i] ] * res;
        res = tmp;
@@ -196,7 +199,7 @@ void circuit::toStream(ostream &out) const
         return;
     }
 
-    for( int i = 0; i < size(); ++i )
+    for( size_t i = 0; i < size(); ++i )
         out << gl.name_qc[ c[i] ] << endl;
 }
 
@@ -211,8 +214,8 @@ void circuit::toStreamSym(ostream &out) const
         return;
     }
 
-    for( int i = 0; i < size() - 1; ++i )
-        out << gl.name[ c[i] ] << " ";
+    for( size_t i = 0; i < size() - 1; ++i )
+        out << gl.name[ c[i] ] ;
     out << gl.name[ c.back() ];
 }
 
@@ -254,7 +257,7 @@ void circuit::push_back( const circuit& c )
         push_back(i);
 }
 
-vector<int> circuit::count()
+vector<int> circuit::count() const
 {
     static const gateLibrary& gl = gateLibrary::instance();
     vector<int> res( gl.GLw7 + 1,0 );
@@ -298,8 +301,20 @@ int circuit::cost()
 {
     static const gateLibrary& gl = gateLibrary::instance();
     int sum = 0;
-    for( int i = 0; i < size(); ++i )
+    for( size_t i = 0; i < size(); ++i )
         sum += gl.cost[ at(i) ];
     return sum;
 }
 
+
+
+circuit::operator matrix2x2hpr() const
+{
+  return matrix2x2hpr(matrix2x2<mpz_class>(*this) );
+}
+
+std::ostream& operator<< ( std::ostream& out , const circuit& c)
+{
+  c.toStreamSym(out);
+  return out;
+}

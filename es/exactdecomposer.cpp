@@ -1,20 +1,20 @@
 //     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com, Dmitri Maslov, Michele Mosca
 //
 //     This file is part of SQCT.
-// 
+//
 //     SQCT is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Lesser General Public License as published by
 //     the Free Software Foundation, either version 3 of the License, or
 //     (at your option) any later version.
-// 
+//
 //     SQCT is distributed in the hope that it will be useful,
 //     but WITHOUT ANY WARRANTY; without even the implied warranty of
 //     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //     GNU Lesser General Public License for more details.
-// 
+//
 //     You should have received a copy of the GNU Lesser General Public License
 //     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
 #include "exactdecomposer.h"
 #include "matrix2x2.h"
@@ -35,7 +35,7 @@ exactDecomposer::exactDecomposer()
     }
 }
 
-void exactDecomposer::decompose( const matrix2x2<mpz_class>& matr, circuit& c)
+void exactDecomposer::decompose( const matrix2x2<mpz_class>& matr, circuit& c) const
 {
     typedef ring_int< resring<8> > rr8;
     typedef matrix2x2< resring<8> > mrr8;
@@ -81,4 +81,17 @@ void exactDecomposer::decompose( const matrix2x2<mpz_class>& matr, circuit& c)
     circuit r;
     slC.find(current,r);
     c.push_back(r);
+}
+
+circuit exactDecomposer::decompose(const matrix2x2<mpz_class> &matr)
+{
+  circuit tmp;
+  instance().decompose(matr,tmp);
+  return tmp;
+}
+
+const exactDecomposer &exactDecomposer::instance()
+{
+  static exactDecomposer ed;
+  return ed;
 }

@@ -1,0 +1,162 @@
+//     Copyright (c) 2013 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com
+//
+//     This file is part of SQCT.
+//
+//     SQCT is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Lesser General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     SQCT is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Lesser General Public License for more details.
+//
+//     You should have received a copy of the GNU Lesser General Public License
+//     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
+//
+//     Based on "Practical approximation of single-qubit unitaries by single-qubit quantum Clifford and T circuits"
+//     by Vadym Kliuchnikov, Dmitri Maslov, Michele Mosca
+//     http://arxiv.org/abs/1212.6964v1, new version of the paper describing this modification: [to be published]
+
+#include "normsolver.h"
+#include <iostream>
+
+using namespace std;
+
+normSolver::normSolver()
+{
+  pari_init(8000000l * 128l, 500509);
+  rnf = gp_read_str("rnfisnorminit(z^2-2,x^2+1)");
+}
+
+static void genToMpz( GEN gen, mpz_class& out )
+{
+  if( gen != 0 )
+  {
+    char* gen_str = GENtostr(gen);
+    out = mpz_class(gen_str);
+    pari_free(gen_str);
+  }
+  else
+    out = 0;
+}
+
+static void genToMpz( GEN gen, mpz_class& out, bool& div )
+{
+  div = false;
+  if( gen != 0 )
+  {
+    if( typ(gen) == t_INT )
+    {
+      char* gen_str = GENtostr(gen);
+      out = mpz_class(gen_str);
+      pari_free(gen_str);
+    }
+    else if( typ(gen) == t_FRAC )
+    {
+      char* gen_str = GENtostr(gel(gen,1));
+      out = mpz_class(gen_str);
+      pari_free(gen_str);
+      div = true;
+      if( ! gequalgs(gel(gen,2),2) )
+        throw std::logic_error("unexpected denominator");
+    }
+    else
+      throw std::logic_error("wrong data type");
+  }
+  else
+    out = 0;
+}
+
+
+bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> &res) const
+{
+  stringstream ss;
+  ss << "(" << rhs[0] << ")+(" << rhs[1] << ")*z";
+  GEN in = gp_read_str(ss.str().c_str());
+  GEN solution = rnfisnorm(rnf,in,0);
+
+  bool ok =  gequal1(gel(solution,2));
+  if( !ok ) //there is no solution
+    return false;
+
+  GEN re_a = 0, re_b = 0, im_a = 0, im_b = 0;
+  GEN sln = gel(gel(solution,1),2);
+
+  if( degree(sln) >= 0 )
+  {
+    GEN re = gel(gel(sln,2),2);
+    if( degree(re) >= 0 )
+      re_a = gel(re,2);
+    if( degree(re) == 1 )
+      re_b = gel(re,3);
+  }
+
+  if( degree(sln) == 1 )
+  {
+    GEN im = gel(gel(sln,3),2);
+    if( degree(im) >= 0 )
+      im_a = gel(im,2);
+    if( degree(im) == 1 )
+      im_b = gel(im,3);
+  }
+
+  genToMpz( re_a, res[0] );
+  genToMpz( im_a, res[2] );
+
+  bool re_b_fr, im_b_fr;
+  mpz_class re_bz, im_bz;
+  genToMpz( re_b, re_bz, re_b_fr );
+  genToMpz( im_b, im_bz, im_b_fr );
+
+  if( re_b_fr && im_b_fr )
+  {
+    res[1] = re_bz + im_bz;
+    res[1] /= 2;
+    res[3] = im_bz - re_bz;
+    res[3] /= 2;
+  }
+  else if( !im_b_fr && !re_b_fr )
+  {
+    res[1] = re_bz + im_bz;
+    res[3] = im_bz - re_bz;
+  }
+  else
+  {
+    cout << ss.str().c_str() << endl;
+    pari_printf("(%Ps)+Sqrt[2]*(%Ps)+I*((%Ps)+Sqrt[2]*(%Ps))\n",re_a,re_b,im_a,im_b);
+    throw std::logic_error("unexpected solution");
+  }
+
+
+  return true;
+}
+
+bool normSolver::solve( const ring_int<mpz_class>& u00, int denompower, m& matr ) const
+{
+  mpz_class pow2 = 1;
+  pow2 <<= denompower * 2;
+  ring_int_real<mpz_class> norm(u00.abs2());
+  if( norm[0] > pow2 )
+    return false;
+  norm[0] = pow2 - norm[0];
+  norm[1] = -norm[1];
+  norm[3] = -norm[3];
+
+  ring_int<mpz_class> u10;
+  if( !solve(norm,u10) )
+    return false;
+
+  matr.set(u00,-u10.conjugate(),
+        u10, u00.conjugate(), denompower * 2);
+
+  matr.reduce();
+  return true;
+}
+
+const normSolver &normSolver::instance()
+{
+  static normSolver inst;
+  return inst;
+}

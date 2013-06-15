@@ -1,24 +1,26 @@
 //     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com, Dmitri Maslov, Michele Mosca
 //
 //     This file is part of SQCT.
-// 
+//
 //     SQCT is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Lesser General Public License as published by
 //     the Free Software Foundation, either version 3 of the License, or
 //     (at your option) any later version.
-// 
+//
 //     SQCT is distributed in the hope that it will be useful,
 //     but WITHOUT ANY WARRANTY; without even the implied warranty of
 //     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //     GNU Lesser General Public License for more details.
-// 
+//
 //     You should have received a copy of the GNU Lesser General Public License
 //     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
 #include "matrix2x2.h"
 #include "resring.h"
 #include "hprhelpers.h"
+
+#include "output.h"
 
 #include <iostream>
 #include <limits>
@@ -139,7 +141,7 @@ int matrix2x2<TInt>::max_sde_abs2() const
 
 
 template < class TInt >
-void matrix2x2<TInt>::mul_TkH(int k, matrix2x2<TInt> &out)
+void matrix2x2<TInt>::mul_TkH(int k, matrix2x2<TInt> &out) const
 {
     ring_int<TInt> d01wk;
     ring_int<TInt> d11wk;
@@ -217,7 +219,7 @@ matrix2x2<TInt> matrix2x2<TInt>::P()
 }
 
 template < class TInt>
-matrix2x2<TInt> matrix2x2<TInt>::conjugateTranspose()
+matrix2x2<TInt> matrix2x2<TInt>::conjugateTranspose() const
 {
     return matrix2x2<TInt>( d[0][0].conjugate(), d[1][0].conjugate(),
                       d[0][1].conjugate(), d[1][1].conjugate(), de );
@@ -241,6 +243,7 @@ matrix2x2<TInt> &matrix2x2<TInt>::operator =(const vector2<TInt> &v)
     d[0][0] = v[0]; d[0][1] = - v[1].conjugate();
     d[1][0] = v[1]; d[1][1] = v[0].conjugate();
     de = v.de;
+    return *this;
 }
 
 template < class TInt>
@@ -283,6 +286,54 @@ bool matrix2x2<TInt>::operator ==( const matrix2x2<TInt>& B ) const
   return true;
 }
 
+template < class TInt >
+int matrix2x2<TInt>::h() const
+{
+  int s = max_sde_abs2();
+  if( s == 0 )
+    return 0;
+  else
+    return s - 1;
+}
+
+template < class TInt >
+int matrix2x2<TInt>::t() const
+{
+  int s = max_sde_abs2();
+  if( s == 0 )
+  {
+    auto det = d[0][0] * d[1][1] - d[0][1] * d[1][0];
+    if( det[0] != 0 || det[2] != 0 )
+      return 0;
+    else
+      return 1;
+  }
+
+  matrix2x2<TInt> tmp;
+  int k = 0;
+  for( k = 0; k < 4; ++k )
+  {
+    mul_TkH(k,tmp);
+    tmp.reduce();
+    if( tmp.max_sde_abs2() == s + 1 )
+      break;
+  }
+
+  matrix2x2<TInt> cnjt = conjugateTranspose();
+  int j = 0;
+  for( j = 0; j < 4; ++j )
+  {
+    cnjt.mul_TkH(j,tmp);
+    tmp.reduce();
+    if( tmp.max_sde_abs2() == s + 1 )
+      break;
+  }
+
+  if( k==4 || j == 4 )
+    throw std::logic_error("t count estimate failure");
+
+  return s - k % 2 - j % 2;
+}
 
 template < class TInt >
 matrix2x2hpr::matrix2x2hpr(const matrix2x2<TInt> &val)
@@ -453,6 +504,7 @@ matrix2x2hpr matrix2x2hpr::adjoint() const
                       std::conj( d[0][1]), std::conj( d[1][1]) );
 }
 
+
 //////// template compilation requests //////////////////
 
 template class matrix2x2<int>;
@@ -472,7 +524,7 @@ template matrix2x2< resring<8> >::matrix2x2( const matrix2x2<mpz_class>& );
 
 //////////////// Helper functions //////////////////////
 
-double trace_dist( const matrix2x2hpr& a, const matrix2x2hpr& b )
+long double trace_dist( const matrix2x2hpr& a, const matrix2x2hpr& b )
 {
     static const mpclass& half = hprHelpers::half();
     static const mpclass& one = hprHelpers::one();
@@ -481,7 +533,31 @@ double trace_dist( const matrix2x2hpr& a, const matrix2x2hpr& b )
     // This would give better results in terms of precision.
     // We, intstead, take advantage of high precision arithmetic and use straightforward calculation
 
-    return hprHelpers::toMachine( sqrt(one - abs( ( a * b.adjoint() ).trace() ) * half) );
+    return to_ld( sqrt(one - abs( ( a * b.adjoint() ).trace() ) * half) );
+}
+
+double operator_dist( const matrix2x2hpr& a, const matrix2x2hpr& b )
+{
+
+  matrix2x2hpr tmp = a - b;
+  cout << tmp << endl;
+  static const mpclass& half = hprHelpers::half();
+  typedef typename matrix2x2hpr::scalar sc;
+  typedef typename sc::value_type rt;
+  sc four(4,0);
+  sc tr = tmp.trace();
+  sc det = tmp(0,0) * tmp(1,1) - tmp(0,1) * tmp(1,0);
+  sc x1 = half * (tr + sqrt(tr*tr - det*four));
+  sc x2 = half * (tr - sqrt(tr*tr - det*four));
+  rt r = max( abs(x1), abs(x2) );
+  return hprHelpers::toMachine(r);
+}
+
+long double frob_dist( const matrix2x2hpr& a, const matrix2x2hpr& b )
+{
+  matrix2x2hpr tmp = a - b;
+  return mpfr_get_ld( sqrt(norm(tmp.d[0][0]) + norm(tmp.d[0][1]) +
+              norm(tmp.d[1][0]) + norm(tmp.d[1][1]) )._x, MPFR_RNDN );
 }
 
 void convert(const matrix2x2hpr& in, matrix2x2cd &out)
@@ -490,3 +566,28 @@ void convert(const matrix2x2hpr& in, matrix2x2cd &out)
         for( int j =0; j < 2; ++j )
             hprHelpers::convert( in.d[i][j],out[i][j] );
 }
+
+void RzTh( const hprr& theta, matrix2x2hpr& target )
+{
+  target.d[0][0] = std::complex<hprr>( cos(theta), sin(theta) );
+  target.d[1][0] = target.d[0][1] = 0;
+  target.d[1][1] = std::complex<hprr>( cos(theta), -sin(theta) );
+}
+
+
+matrix2x2hpr RzTh( const hprr& theta )
+{
+  matrix2x2hpr target;
+  target.d[0][0] = std::complex<hprr>( cos(theta), sin(theta) );
+  target.d[1][0] = target.d[0][1] = 0;
+  target.d[1][1] = std::complex<hprr>( cos(theta), -sin(theta) );
+  return target;
+}
+
+
+matrix2x2hpr Rz( const hprr& phi )
+{
+  return RzTh ( - phi * hprHelpers::half() );
+}
+
+

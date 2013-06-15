@@ -36,8 +36,34 @@ add_executable(sqct
  main.cpp
 )
 
+add_executable(sqct2
+ hprhelpers.cpp
+ resring.cpp
+ rint.cpp
+ matrix2x2.cpp
+ vector2.cpp
+ output.cpp
+ gatelibrary.cpp
+ symbolic_angle.cpp
+ 
+ es/numbersgen.cpp
+ es/optsequencegenerator.cpp
+ es/seqlookupcliff.cpp
+ es/exactdecomposer.cpp
+ 
+ appr/zrot_cache.cpp
+ appr/toptzrot2.cpp
+ appr/normsolver.cpp
+ appr/approxlist.cpp
+
+ mainA.cpp
+)
+
 set(BOOST_LIBS program_options timer chrono system)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 
 target_link_libraries(sqct ${Boost_LIBRARIES})
 target_link_libraries(sqct gomp pthread mpfr gmpxx gmp rt)
+
+target_link_libraries(sqct2 ${Boost_LIBRARIES})
+target_link_libraries(sqct2 gomp pthread pari mpfr gmpxx gmp rt )

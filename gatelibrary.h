@@ -1,20 +1,20 @@
 //     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com, Dmitri Maslov, Michele Mosca
 //
 //     This file is part of SQCT.
-// 
+//
 //     SQCT is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Lesser General Public License as published by
 //     the Free Software Foundation, either version 3 of the License, or
 //     (at your option) any later version.
-// 
+//
 //     SQCT is distributed in the hope that it will be useful,
 //     but WITHOUT ANY WARRANTY; without even the implied warranty of
 //     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //     GNU Lesser General Public License for more details.
-// 
+//
 //     You should have received a copy of the GNU Lesser General Public License
 //     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
 #ifndef GATELIBRARY_H
 #define GATELIBRARY_H
@@ -88,6 +88,8 @@ public:
     typedef matrix2x2<mpz_class> m;
     /// \brief Conversion operator to unitary
     operator matrix2x2<mpz_class> () const;
+    /// \brief Conversion operator to unitary
+    operator matrix2x2hpr () const;
     /// \brief Converts circuit to unitary and writes result into res
     void convert( m& res ) const;
     /// \brief Outputs circuit to stream in Dot QC friendly way
@@ -109,12 +111,17 @@ public:
     /// For resulting vector \b res, the number \b res[gateId] gives a number of gates with
     /// specific id in the circuit.
     /// \see gateLibrary class for the list of ids
-    std::vector<int> count();
+    std::vector<int> count() const;
     /// \brief Reads circuit from stream in line by line mode. Lines beginning with #
     /// are skipped. All charachters that are not gate symbols or '*','d' are ignored.
     /// If gate symbol is followed by * or d it repplaced by its inverse.
     void fromStream( std::istream& in, bool reverse = false );
     /// \brief Returns total cost of the circuit defined by gateLibrary::cost vector
     int cost();
+
 };
+
+std::ostream& operator<< ( std::ostream& out , const circuit& c);
+
+
 #endif // GATELIBRARY_H
