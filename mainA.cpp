@@ -20,6 +20,7 @@
 #include "output.h"
 
 #include "appr/zrot_cache.h"
+#include "test.h"
 
 #include <fstream>
 #include <sstream>
@@ -89,6 +90,9 @@ int main(int ac, char* av[])
              "Produce help message, see help <option name> for more details "
              "about specific option.")
 
+            ("test,T", po::value< string >(&(topt.in_filename))->implicit_value("generic"),
+             "Run tests")
+
             ("gen,G", po::value< string >(&(topt.in_filename)),
              "File name with unitaries for approximation. Example: -G in ")
 
@@ -141,6 +145,11 @@ int main(int ac, char* av[])
         if( vm.count("in") ) {
             sqct_light_app lapp(sp);
             lapp.run();
+            return 0;
+        }
+
+        if( vm.count("test") ) {
+            run_tests();
             return 0;
         }
 

@@ -23,6 +23,9 @@
 #include <complex>
 #include "hprhelpers.h"
 
+
+
+
 /// \brief Finds sde given denominator exponent and gde, see formula (1) http://arxiv.org/abs/1206.5236
 int sde( int denom_exponent, int gde );
 /// \brief Returns canonical form of complex number with complex argument in \f$ [0,\pi/8] \f$
@@ -184,7 +187,6 @@ struct ring_int
     bool is_compl( const ring_int& v) const;
     /// \brief Returns true if number is real
     bool is_im_eq0() const;
-protected:
     /// \brief Stores integer coefficients of the ring integer
     int_type v[4];
 };
@@ -201,8 +203,15 @@ struct ring_int_real : public ring_int<TInt>
     ring_int_real() = default;
     /// \brief Sets value to \f$a+\sqrt{2}b\f$
     ring_int_real ( int_type a, int_type b );
+    ring_int_real ( const ring_int<TInt>& r );
     /// \brief Fast algorithm for computation of gde. See discussion in Section 5 of http://arxiv.org/abs/1206.5236
     int gde() const;
+
+    bool non_negative();
 };
+
+typedef ring_int_real<mpz_class> zs2type;
+typedef mpz_class ztype;
+typedef ring_int<mpz_class> zwt;
 
 #endif // RINT_OPT_PROOF_H

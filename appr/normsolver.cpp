@@ -22,6 +22,8 @@
 #include "normsolver.h"
 #include <iostream>
 
+#include <cassert>
+
 using namespace std;
 
 normSolver::normSolver()
@@ -155,8 +157,55 @@ bool normSolver::solve( const ring_int<mpz_class>& u00, int denompower, m& matr 
   return true;
 }
 
+zfactorization normSolver::factor(const mpz_class &number) const
+{
+  mpz_class n;
+  zfactorization res;
+
+  if( number < 0 )
+  {
+    n = -number;
+    res.sign = -1;
+  }
+  else
+  {
+    n = number;
+    res.sign = 1;
+  }
+
+  GEN in = gp_read_str(n.get_str().c_str());
+  assert( typ(in) == t_INT );
+  GEN F = Z_factor(in);
+  assert( typ(F) == t_MAT );
+  assert( lg(F) == 3 );
+
+  GEN primes = gel(F,1);
+  assert( typ(primes) == t_COL );
+
+  GEN powers = gel(F,2);
+  assert( typ(powers) == t_COL );
+
+  int factors = lg(primes) - 1;
+  assert( lg(powers) == factors + 1 );
+
+  for( int i = 0; i < factors; ++i )
+  {
+    GEN prime = gel(primes,i+1);
+    GEN power = gel(powers,i+1);
+    assert(typ(prime) == t_INT);
+    assert(typ(power) == t_INT);
+    mpz_class pr,pw;
+    genToMpz(prime,pr);
+    genToMpz(power,pw);
+    res.prime_factors.push_back(make_pair(pr,pw.get_si()));
+  }
+
+  return res;
+}
+
 const normSolver &normSolver::instance()
 {
   static normSolver inst;
   return inst;
 }
+

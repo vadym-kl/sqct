@@ -4,10 +4,10 @@ add_definitions("-std=c++0x")
 
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3")
-set( CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
-set(Boost_USE_STATIC_LIBS ON)
+#set( CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
+#set(Boost_USE_STATIC_LIBS ON)
 
-add_executable(sqct
+add_executable(sqctSK
  hprhelpers.cpp
  resring.cpp
  rint.cpp
@@ -36,7 +36,7 @@ add_executable(sqct
  main.cpp
 )
 
-add_executable(sqct2
+add_executable(sqct
  hprhelpers.cpp
  resring.cpp
  rint.cpp
@@ -56,14 +56,19 @@ add_executable(sqct2
  appr/normsolver.cpp
  appr/approxlist.cpp
 
+ test.cpp
+ factorzs2.cpp
+ tcount.cpp
+ solvenormequation.cpp
+
  mainA.cpp
 )
 
 set(BOOST_LIBS program_options timer chrono system)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 
-target_link_libraries(sqct ${Boost_LIBRARIES})
-target_link_libraries(sqct gomp pthread mpfr gmpxx gmp rt)
+target_link_libraries(sqctSK ${Boost_LIBRARIES})
+target_link_libraries(sqctSK gomp pthread mpfr gmpxx gmp rt)
 
-target_link_libraries(sqct2 ${Boost_LIBRARIES})
-target_link_libraries(sqct2 gomp pthread pari mpfr gmpxx gmp rt )
+target_link_libraries(sqct ${Boost_LIBRARIES})
+target_link_libraries(sqct gomp pthread pari mpfr gmpxx gmp rt )

@@ -24,6 +24,7 @@
 
 #include "gatelibrary.h"
 #include "rint.h"
+#include "factorzs2.h"
 
 #include <pari/pari.h>
 
@@ -42,6 +43,8 @@ public:
   /// 1/2^denompower * {{u00,-y^{\dagger}},{y,u00^{\dagger}}};
   /// \return true if such a unitary exists and writes it down into matr
   bool solve( const ring_int<mpz_class>& u00, int denompower, m& matr ) const;
+
+  zfactorization factor( const mpz_class& number ) const;
 
   /// \brief Instance of normSolver to be used for all calls; allows to avoid multiple initialization of PARI
   static const normSolver& instance();

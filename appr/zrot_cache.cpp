@@ -229,13 +229,13 @@ static bool compare_circuits( const circuit& a, const circuit& b )
   return true;
 }
 
-template< class T>
-ostream& operator<< ( ostream& out, const vector<T>& vec )
-{
-  for( const auto& a : vec )
-    out << a << " ,";
-  return out;
-}
+//template< class T>
+//ostream& operator<< ( ostream& out, const vector<T>& vec )
+//{
+//  for( const auto& a : vec )
+//    out << a << " ,";
+//  return out;
+//}
 
 
 template< class T>

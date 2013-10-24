@@ -65,4 +65,25 @@ std::istream& operator>>(std::istream& in, matrix2x2<TInt>& A );
 template < class TInt >
 std::istream& operator>>(std::istream& in, ring_int<TInt>& A );
 
+/// \brief Outputs x to stream out in Mathematica friendly form
+template < class T >
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v )
+{
+  out << "{";
+  if( v.size() != 0 )
+    out << v[0] ;
+  for( size_t k = 1 ; k < v.size(); ++k )
+      out << "," << v[k] ;
+  out << "}";
+  return out;
+}
+
+/// \brief Outputs x to stream out in Mathematica friendly form
+template < class T1, class T2 >
+std::ostream& operator<<(std::ostream& out, const std::pair<T1,T2>& v )
+{
+  out << "{" << v.first << "," << v.second << "}";
+  return out;
+}
+
 #endif // OUTPUT_H

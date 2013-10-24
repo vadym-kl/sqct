@@ -703,7 +703,13 @@ bool ring_int<T>::operator !=(const ring_int<T> &y) const
 template < class T >
 ring_int_real<T>::ring_int_real(ring_int_real<T>::int_type a, ring_int_real<T>::int_type b)
 {
-    base::set(a,b,0,-b);
+  base::set(a,b,0,-b);
+}
+
+template < class T >
+ring_int_real<T>::ring_int_real(const ring_int<T> &r)
+{
+  base::set(r.v[0],r.v[1],0,-r.v[1]);
 }
 
 template < class T >
@@ -721,6 +727,32 @@ int ring_int_real<T>::gde() const
     else
         return (ga << 1);
 
+}
+
+template < class T >
+bool ring_int_real<T>::non_negative()
+{
+  if( base::v[0] >= 0 && base::v[1] >= 0 )
+    return true;
+
+  if( base::v[0] < 0 && base::v[1] < 0 )
+    return false;
+
+  if( base::v[0] >= 0 && base::v[1] < 0 )
+  {
+    return (base::v[0]*base::v[0] - 2*base::v[1]*base::v[1]) >= 0;
+  }
+
+  if( base::v[0] < 0 && base::v[1] >= 0 )
+  {
+    return (2*base::v[1]*base::v[1] - base::v[0]*base::v[0]) >= 0;
+  }
+}
+
+template<>
+bool ring_int_real<resring<8>>::non_negative()
+{
+   return false;
 }
 
 //////// template compilation requests
