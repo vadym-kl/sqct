@@ -30,6 +30,7 @@ normSolver::normSolver()
 {
   pari_init(8000000l * 128l, 500509);
   rnf = gp_read_str("rnfisnorminit(z^2-2,x^2+1)");
+  zs2 = gp_read_str("bnfinit(z^2-2)");
 }
 
 static void genToMpz( GEN gen, mpz_class& out )
@@ -70,6 +71,7 @@ static void genToMpz( GEN gen, mpz_class& out, bool& div )
   else
     out = 0;
 }
+
 
 
 bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> &res) const
@@ -133,6 +135,39 @@ bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> 
 
 
   return true;
+}
+
+bool normSolver::solve(const mpz_class &rhs, ring_int_real<mpz_class> &res) const
+{
+   stringstream ss;
+   ss << rhs;
+   GEN in = gp_read_str(ss.str().c_str());
+   GEN sln = bnfisnorm(zs2,in,1);
+
+   assert( lg(sln) == 3 );
+
+   bool ok =  gequal1(gel(sln,2));
+   if( !ok ) //there is no solution
+     return false;
+
+   GEN val = gel(sln,1);
+   assert( typ(val) == t_POLMOD );
+   GEN val_basis = algtobasis(zs2,val);
+   assert( typ(val_basis) == t_COL );
+   assert( lg(val_basis) == 3 );
+   assert( typ(gel(val_basis,1)) == t_INT );
+   assert( typ(gel(val_basis,2)) == t_INT );
+
+   genToMpz( gel(val_basis,1), res[0] );
+   genToMpz( gel(val_basis,2), res[1] );
+
+   res[2] = 0;
+   res[3] = -res[1];
+
+   res.make_positive();
+
+   return true;
+
 }
 
 bool normSolver::solve( const ring_int<mpz_class>& u00, int denompower, m& matr ) const

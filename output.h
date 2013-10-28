@@ -37,6 +37,8 @@ std::ostream& operator<<(std::ostream& out, const resring<Tmod>& x );
 /// \note Precompiled for types used by ring_int
 template < class TInt >
 std::ostream& operator<<(std::ostream& out, const ring_int<TInt>& x );
+template < class TInt >
+std::ostream& operator<<(std::ostream& out, const ring_int_real<TInt>& x );
 
 /// \brief Outputs x to stream out in Mathematica friendly form
 /// \note Precompiled for types used by vector2

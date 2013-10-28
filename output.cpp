@@ -42,12 +42,24 @@ std::ostream& operator<<(std::ostream& out, const matrix2x2hpr& A )
 template < class TInt >
 std::ostream& operator<<(std::ostream& out, const ring_int<TInt>& x )
 {
-  out << "ringInt[{";
+  out << "ringInt[";
   for( int i = 0 ; i < 4 ; ++i )
     if( i != 3 )
       out << x[i] << ",";
     else
-      out << x[i] << "}]";
+      out << x[i] << "]";
+  return out;
+}
+
+template < class TInt >
+std::ostream& operator<<(std::ostream& out, const ring_int_real<TInt>& x )
+{
+  out << "zs2[";
+  for( int i = 0 ; i < 2; ++i )
+    if( i != 1 )
+      out << x[i] << ",";
+    else
+      out << x[i] << "]";
   return out;
 }
 
@@ -103,6 +115,12 @@ template std::ostream& operator<<(std::ostream& out, const ring_int<int>& x );
 template std::ostream& operator<<(std::ostream& out, const ring_int<long int>& x );
 template std::ostream& operator<<(std::ostream& out, const ring_int<mpz_class>& x );
 template std::ostream& operator<<(std::ostream& out, const ring_int<rring8>& x );
+
+
+template std::ostream& operator<<(std::ostream& out, const ring_int_real<int>& x );
+template std::ostream& operator<<(std::ostream& out, const ring_int_real<long int>& x );
+template std::ostream& operator<<(std::ostream& out, const ring_int_real<mpz_class>& x );
+template std::ostream& operator<<(std::ostream& out, const ring_int_real<rring8>& x );
 
 template std::istream& operator>>(std::istream& in, ring_int<mpz_class>& A );
 template std::istream& operator>>(std::istream& in, ring_int<int>& A );

@@ -39,6 +39,8 @@ public:
   /// \brief rsh specifies A + \sqrt{2}B and res contains one of possible solutions to the norm equation
   bool solve( const ring_int_real<mpz_class>& rhs, ring_int<mpz_class>& res ) const;
 
+  bool solve( const mpz_class& rhs, ring_int_real<mpz_class>& res ) const;
+
   /// \brief Uses norm equation solver to find an entry y of the unitary
   /// 1/2^denompower * {{u00,-y^{\dagger}},{y,u00^{\dagger}}};
   /// \return true if such a unitary exists and writes it down into matr
@@ -50,6 +52,7 @@ public:
   static const normSolver& instance();
 private:
   GEN rnf; ///< PARI object for the extension Z[exp(i pi/4)] / Z[sqrt{2}]
+  GEN zs2; /// Solving norm equations in Z[sqrt{2}]
 };
 
 #endif // NORMSOLVER_H

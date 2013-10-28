@@ -377,6 +377,12 @@ ring_int<T> ring_int<T>::conjugate() const
 }
 
 template < class T >
+ring_int<T> ring_int<T>::g_conjugate() const
+{
+    return ring_int(v[0],-v[1],v[2],-v[3]);
+}
+
+template < class T >
 void ring_int<T>::conjugate_eq()
 {
     set(v[0],-v[3],-v[2],-v[1]);
@@ -604,7 +610,19 @@ bool ring_int<T>::is_compl(const ring_int<T> &v) const
 template < class T >
 bool ring_int<T>::is_im_eq0() const
 {
-    return (v[2] == 0) && (v[1] == - v[3]);
+  return (v[2] == 0) && (v[1] == - v[3]);
+}
+
+template < class TInt >
+bool ring_int<TInt>::divides(const TInt &val) const
+{
+  return (v[0] % val == 0) && (v[1] % val == 0) && (v[2] % val == 0) && (v[3] % val == 0);
+}
+
+template <>
+bool ring_int< resring<8> >::divides(const resring<8>& val) const
+{
+  return false;
 }
 
 template < class T >
@@ -730,7 +748,13 @@ int ring_int_real<T>::gde() const
 }
 
 template < class T >
-bool ring_int_real<T>::non_negative()
+ring_int_real<T> ring_int_real<T>::g_conjugate() const
+{
+  return ring_int_real(base::v[0],-base::v[1]);
+}
+
+template < class T >
+bool ring_int_real<T>::non_negative() const
 {
   if( base::v[0] >= 0 && base::v[1] >= 0 )
     return true;
@@ -750,10 +774,87 @@ bool ring_int_real<T>::non_negative()
 }
 
 template<>
-bool ring_int_real<resring<8>>::non_negative()
+bool ring_int_real<resring<8>>::non_negative() const
 {
-   return false;
+                              return false;
+                              }
+
+template < class T >
+ring_int_real<T> &ring_int_real<T>::operator /=(const ring_int_real<T> &val)
+{
+  auto r = (*this) * val.g_conjugate();
+  auto nrm = val.norm();
+  this->v[0] = r.v[0] / nrm;
+  this->v[1] = r.v[1] / nrm;
+  this->v[3] = - this->v[1];
+return *this;
 }
+
+template < class T >
+bool ring_int_real<T>::divides(const ring_int_real<T> &val) const
+{
+  auto r = (*this) * val.g_conjugate();
+  return r.divides(val.norm());
+}
+
+template < class TInt >
+bool ring_int_real<TInt>::divides(const TInt &val) const
+{
+  return (this->v[0] % val == 0 ) && (this->v[1] % val == 0 );
+}
+
+template < class TInt >
+void ring_int_real<TInt>::make_positive()
+{
+  int bts = 0;
+  auto cnj = this->g_conjugate();
+  if( !non_negative() ) bts ^= 1;
+  if( !cnj.non_negative() ) bts ^= 2;
+  switch (bts) {
+    case 1:
+      *this = ring_int_real<TInt>(1,-1) * (*this);
+      break;
+    case 2:
+      *this = ring_int_real<TInt>(-1,1) * (*this);
+      break;
+    case 3:
+      *this = ring_int_real<TInt>(-1,0) * (*this);
+      break;
+    default:
+      break;
+  }
+  
+  assert(non_negative());
+  assert(g_conjugate().non_negative());
+}
+
+template <>
+bool ring_int_real< resring<8> >::divides(const resring<8> &val) const
+{
+  return false;
+}
+
+template < class T >
+ring_int_real<T> &ring_int_real<T>::operator /=(const T &val)
+{
+  this->v[0] /= val;
+  this->v[1] /= val;
+  this->v[3] = - this->v[1];
+  return *this;
+}
+
+template < class T >
+typename ring_int_real<T>::int_type ring_int_real<T>::norm() const
+{
+  return base::v[0] * base::v[0]  - 2 * base::v[1] * base::v[1];
+}
+
+template <>
+typename ring_int_real<resring<8>>::int_type ring_int_real<resring<8>>::norm() const
+{
+  return 0;
+}
+
 
 //////// template compilation requests
 

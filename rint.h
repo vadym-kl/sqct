@@ -144,6 +144,8 @@ struct ring_int
     static ring_int sqrt2();
     /// \brief Returns Complex conjugate
     ring_int conjugate() const;
+
+    ring_int g_conjugate() const;
     /// \brief Sets value to its complex conjugate
     void conjugate_eq();
 
@@ -187,6 +189,9 @@ struct ring_int
     bool is_compl( const ring_int& v) const;
     /// \brief Returns true if number is real
     bool is_im_eq0() const;
+
+    bool divides(  const TInt& val ) const;
+
     /// \brief Stores integer coefficients of the ring integer
     int_type v[4];
 };
@@ -206,9 +211,81 @@ struct ring_int_real : public ring_int<TInt>
     ring_int_real ( const ring_int<TInt>& r );
     /// \brief Fast algorithm for computation of gde. See discussion in Section 5 of http://arxiv.org/abs/1206.5236
     int gde() const;
+    ring_int_real g_conjugate() const;
 
-    bool non_negative();
+
+
+    bool non_negative() const;
+    ring_int_real& operator /= ( const ring_int_real& val );
+    ring_int_real& operator /= ( const TInt& val );
+    bool divides(  const ring_int_real& val ) const;
+    bool divides(  const TInt& val ) const;
+
+    void make_positive();
+
+    int_type norm() const;
 };
+
+template < class TInt >
+std::pair<int,long> unit_log( const ring_int_real<TInt>& val)
+{
+  int sign = 1; long power = 0; int power_sign = 1;
+  ring_int_real<TInt> u = val, gu;
+  if( val[0] < 0 && val[1] <=0 )
+  {
+    sign = -1; power_sign = -1;
+  } else if ( val[0] > 0 && val[1] >= 0 )
+  {
+    sign = 1; power_sign = -1;
+  }
+  else if ( val[0] * val[1] < 0 )
+  {
+    if( (val[1] % 2 == 1 || val[1] % 2 == -1 ) != (val[1] < 0) )
+    {
+      sign = 1; power_sign = 1;
+    }
+    else
+    {
+      sign = -1; power_sign = 1;
+    }
+  }
+
+  auto rr = ring_int_real<TInt>(sign,0);
+
+  if( power_sign == 1 )
+    gu = ring_int_real<TInt>(1,1);
+  else
+    gu = ring_int_real<TInt>(-1,1);
+
+  while( u != rr )
+  {
+    u = u * gu;
+    power += power_sign;
+  }
+  return std::make_pair(sign,power);
+}
+
+template < class TInt >
+ring_int_real<TInt> unit_power( const std::pair<int,long>& v )
+{
+   ring_int_real<TInt> u(v.first,0), gu;
+   long inc = 1;
+   if( v.second > 0 )
+   {
+     inc = 1;
+     gu = ring_int_real<TInt>(-1,1);
+   }
+   else
+   {
+     inc = -1;
+     gu = ring_int_real<TInt>(1,1);
+   }
+
+   for( long i = 0; i != v.second; i+= inc )
+     u = u * gu;
+
+   return u;
+}
 
 typedef ring_int_real<mpz_class> zs2type;
 typedef mpz_class ztype;

@@ -15,9 +15,22 @@ struct zfactorization
 
 struct zs2factorization
 {
+  bool solvable;
+  int ramified_prime_power ;
   std::vector< std::pair<zs2type, long> > prime_factors;
   int sign;
-  int unit_power;
+  long unit_power;
+
+  operator zs2type()
+  {
+    zs2type r(::unit_power<mpz_class>(std::make_pair(sign,unit_power)));
+    for( const auto& a : prime_factors )
+    {
+      for( int k = 0; k < a.second; ++k )
+        r = r * a.first;
+    }
+    return r;
+  }
 };
 
 zfactorization factorize( const ztype& val );

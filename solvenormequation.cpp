@@ -7,6 +7,17 @@ norm_equation_solution solve_norm_equation(const zs2type &rhs)
   norm_equation_solution res;
   res.exists = false;
 
+  if( ! (rhs.non_negative() && rhs.g_conjugate().non_negative() ) )
+    return res;
+
+  auto Fz = factorize(rhs.norm());
+  res.exists = is_solvable(Fz);
+
+  if( res.exists )
+  {
+
+  }
+
   return res;
 }
 
