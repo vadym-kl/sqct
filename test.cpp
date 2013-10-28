@@ -1,6 +1,7 @@
 #include "test.h"
 
 #include "appr/normsolver.h"
+#include "solvenormequation.h"
 #include "output.h"
 
 #include <iostream>
@@ -117,6 +118,39 @@ void zs2FactoringTest()
   }
 }
 
+bool norm_solver_sub_test( const zs2type& rhs )
+{
+  auto r = solve_norm_equation(rhs);
+  if( r.exists )
+  {
+    bool eq = zwt(r).abs2() == rhs;
+    if( !eq )
+    {
+      cout << "given: " << rhs << endl;
+      cout << "got  : " << zwt(r).abs2() << endl;
+    }
+    assert( eq );
+  }
+  return r.exists;
+}
+
+void norm_solver_test()
+{
+  zs2type ram(2,1);
+  zs2type num1(109,40);
+  zs2type num7(91,11);
+  zs2type num3(8011,0);
+  zs2type num5(8053,0);
+  assert(norm_solver_sub_test(ram));
+  assert(norm_solver_sub_test(num1));
+  assert(!norm_solver_sub_test(num7));
+  assert(!norm_solver_sub_test(num7*ram));
+  assert(norm_solver_sub_test(num7*num7*ram));
+  assert(norm_solver_sub_test(num3));
+  assert(norm_solver_sub_test(num5));
+  assert(norm_solver_sub_test(num7*num7*ram*ram*ram*num1*num3*num5));
+}
+
 void run_tests()
 {
   cout << "Testing started" << endl;
@@ -124,5 +158,6 @@ void run_tests()
   zs2normEquationTest();
   zs2FactoringTest();
   unit_log_test();
+  norm_solver_test();
   cout << "Testing finished" << endl;
 }

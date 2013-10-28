@@ -287,6 +287,8 @@ ring_int_real<TInt> unit_power( const std::pair<int,long>& v )
    return u;
 }
 
+
+
 typedef ring_int_real<mpz_class> zs2type;
 typedef mpz_class ztype;
 typedef ring_int<mpz_class> zwt;

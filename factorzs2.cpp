@@ -12,7 +12,7 @@ zfactorization factorize(const ztype &val)
 zs2factorization factorize(const zs2type &val, const zfactorization &factors)
 {
   zs2factorization res;
-  res.solvable = false;
+  res.solvable = true;
 
   auto rem = val;
   size_t pos = 0;
@@ -113,4 +113,5 @@ bool is_solvable(const zfactorization &factors)
         return false;
     }
   }
+  return true;
 }

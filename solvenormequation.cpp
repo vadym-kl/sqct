@@ -1,4 +1,6 @@
 #include "solvenormequation.h"
+#include "appr/normsolver.h"
+#include <cassert>
 
 using namespace std;
 
@@ -13,10 +15,49 @@ norm_equation_solution solve_norm_equation(const zs2type &rhs)
   auto Fz = factorize(rhs.norm());
   res.exists = is_solvable(Fz);
 
+  const auto& ns = normSolver::instance();
+
   if( res.exists )
   {
-
+    auto Fzs2 = factorize(rhs,Fz);
+    res.exists = Fzs2.solvable;
+    if( res.exists )
+    {
+      res.ramified.push_back(make_pair(zwt(1,1,0,0),Fzs2.ramified_prime_power));
+      for( const auto& a : Fzs2.prime_factors )
+      {
+        zwt ans;
+        if( a.first[1] == 0 ) // rational prime
+        {
+          bool r = ns.solve(a.first,ans);
+          assert(r);
+          res.split.push_back(make_pair(ans,a.second));
+        }
+        else
+        {
+          auto nrm = a.first.norm();
+          auto md = nrm % 8;
+          if( md == 1 )
+          {
+            bool r = ns.solve(a.first,ans);
+            assert(r);
+            res.split.push_back(make_pair(ans,a.second));
+          }
+          else
+          {
+            assert(md == 7);
+            assert(a.second % 2 == 0);
+            res.inert.push_back(make_pair(a.first,a.second/2));
+          }
+        }
+      }
+      assert(Fzs2.unit_power % 2 == 0);
+      assert(Fzs2.sign == 1);
+      res.unit_power = Fzs2.unit_power / 2;
+    }
   }
+
+
 
   return res;
 }
