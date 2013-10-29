@@ -90,20 +90,38 @@ bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> 
 
   if( degree(sln) >= 0 )
   {
-    GEN re = gel(gel(sln,2),2);
-    if( degree(re) >= 0 )
-      re_a = gel(re,2);
-    if( degree(re) == 1 )
-      re_b = gel(re,3);
+    if( typ(gel(sln,2)) == t_POLMOD )
+    {
+      GEN re = gel(gel(sln,2),2);
+      if( degree(re) >= 0 )
+        re_a = gel(re,2);
+      if( degree(re) == 1 )
+        re_b = gel(re,3);
+    }
+    else if( typ(gel(sln,2)) == t_INT )
+    {
+      re_a = gel(sln,2);
+    }
+    else
+      throw std::logic_error(__FILE__":re:unexpected");
   }
 
   if( degree(sln) == 1 )
   {
-    GEN im = gel(gel(sln,3),2);
-    if( degree(im) >= 0 )
-      im_a = gel(im,2);
-    if( degree(im) == 1 )
-      im_b = gel(im,3);
+    if( typ(gel(sln,3)) == t_POLMOD )
+    {
+      GEN im = gel(gel(sln,3),2);
+      if( degree(im) >= 0 )
+        im_a = gel(im,2);
+      if( degree(im) == 1 )
+        im_b = gel(im,3);
+    }
+    else if( typ(gel(sln,3)) == t_INT )
+    {
+      im_a = gel(sln,3);
+    }
+    else
+      throw std::logic_error(__FILE__":im:unexpected");
   }
 
   genToMpz( re_a, res[0] );

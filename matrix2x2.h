@@ -129,7 +129,7 @@ struct matrix2x2hpr
     matrix2x2hpr operator*( const matrix2x2hpr& b ) const;
     /// \brief Matrix addition
     matrix2x2hpr operator+( const matrix2x2hpr& b ) const;
-    /// \brief Matrix sustruction
+    /// \brief Matrix substruction
     matrix2x2hpr operator-( const matrix2x2hpr& b ) const;
     /// \brief Multiplication by real scalar
     matrix2x2hpr operator*( const mpclass& val ) const;

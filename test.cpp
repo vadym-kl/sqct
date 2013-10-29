@@ -3,10 +3,12 @@
 #include "appr/normsolver.h"
 #include "solvenormequation.h"
 #include "output.h"
+#include "tcount.h"
 
 #include <iostream>
 #include <sstream>
 #include <cassert>
+#include <algorithm>
 
 using namespace std;
 
@@ -137,11 +139,15 @@ bool norm_solver_sub_test( const zs2type& rhs )
 void norm_solver_test()
 {
   zs2type ram(2,1);
+  zs2type u(-1,1);
   zs2type num1(109,40);
   zs2type num7(91,11);
   zs2type num3(8011,0);
   zs2type num5(8053,0);
+  assert(norm_solver_sub_test(zs2type(3,-2)));
   assert(norm_solver_sub_test(ram));
+  assert(!norm_solver_sub_test(u*ram));
+  assert(norm_solver_sub_test(u*u*ram));
   assert(norm_solver_sub_test(num1));
   assert(!norm_solver_sub_test(num7));
   assert(!norm_solver_sub_test(num7*ram));
@@ -149,6 +155,103 @@ void norm_solver_test()
   assert(norm_solver_sub_test(num3));
   assert(norm_solver_sub_test(num5));
   assert(norm_solver_sub_test(num7*num7*ram*ram*ram*num1*num3*num5));
+}
+
+long all_solutions_sub_test( const zs2type& rhs )
+{
+  auto r = solve_norm_equation(rhs);
+  if( r.exists )
+  {
+    auto all = all_solutions(r);
+    for( const auto& a : all )
+    {
+      bool eq = a.abs2() == rhs;
+      if( !eq )
+      {
+        cout << "given: " << rhs << endl;
+        cout << "got  : " << a.abs2() << endl;
+      }
+      assert(eq);
+    }
+
+    std::sort(all.begin(),all.end());
+    for( size_t k = 1; k < all.size(); ++ k )
+      assert( all[k] != all[k-1] );
+
+    return all.size();
+  }
+  else
+    return -1;
+}
+
+void all_solutions_test()
+{
+  zs2type ram(2,1);
+  zs2type u(-1,1);
+  zs2type num1(109,40);
+  zs2type num7(91,11);
+  zs2type num3(8011,0);
+  zs2type num5(8053,0);
+
+  assert(all_solutions_sub_test(ram) == 1);
+  assert(all_solutions_sub_test(u*u*ram) == 1);
+  assert(all_solutions_sub_test(ram*ram*ram) == 1);
+
+  assert(all_solutions_sub_test(num1*ram) == 2);
+  assert(all_solutions_sub_test(num1*num1*ram) == 3);
+  assert(all_solutions_sub_test(num1*num1*num1*ram) == 4);
+
+  assert(all_solutions_sub_test(num3*ram) == 2);
+  assert(all_solutions_sub_test(num3*num3*ram) == 3);
+  assert(all_solutions_sub_test(num3*num3*num3*ram) == 4);
+
+  assert(all_solutions_sub_test(num5*ram) == 2);
+  assert(all_solutions_sub_test(num5*num5*ram) == 3);
+  assert(all_solutions_sub_test(num5*num5*num5*ram) == 4);
+
+  assert(all_solutions_sub_test(num5*num5*num5*num3*num3*ram) == 12);
+  assert(all_solutions_sub_test(num5*num5*num5*num3*num3*ram*num7*num7) == 12);
+
+  assert(all_solutions_sub_test(zs2type(3,-2)) == 1);
+}
+
+int min_t_count_sub_test(const zwt& val, int de, int det)
+{
+  auto r = min_t_count(val,de,det);
+  return r.min_t_count;
+}
+
+void min_t_count_test()
+{
+  {
+    // H.T.H.T.H
+    auto r = min_t_count(zwt(1,2,-1,0),3,6);
+    //cout << r.y.size() << endl;
+    assert( r.min_t_count == 2 );
+  }
+
+  {
+    // H.T.H.T.H.T.H
+    auto r = min_t_count(zwt(1,3,-1,-1),4,7);
+    //cout << r.y.size() << endl;
+    assert( r.min_t_count == 3 );
+  }
+
+  typedef matrix2x2<mpz_class> mt;
+  auto m = mt::H() * mt::T() * mt::H() * mt::T() * mt::H() * mt::T() * mt::H() ;
+
+  int det = 7;
+  m.reduce();
+  assert( min_t_count_sub_test(m.d[0][0],m.de,det) == 3 );
+  for( int i = 0; i< 150; ++i )
+  {
+    int pow = 7 - 2 *( rand() % 4 );
+    m = mt::H() * mt::T(pow) * m;
+    det += 5;
+    m.reduce();
+    assert(m.is_unitary());
+    assert( min_t_count_sub_test(m.d[0][0],m.de,det) == i + 4 );
+  }
 }
 
 void run_tests()
@@ -159,5 +262,7 @@ void run_tests()
   zs2FactoringTest();
   unit_log_test();
   norm_solver_test();
+  all_solutions_test();
+  min_t_count_test();
   cout << "Testing finished" << endl;
 }

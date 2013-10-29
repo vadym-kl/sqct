@@ -17,7 +17,7 @@ zs2factorization factorize(const zs2type &val, const zfactorization &factors)
   auto rem = val;
   size_t pos = 0;
 
-  if( factors.prime_factors[0].first == 2 )
+  if( factors.prime_factors.size() > 0  &&  factors.prime_factors[0].first == 2 )
   {
     zs2type sol2(2,1);
     for( int i = 0; i < factors.prime_factors[0].second; ++i )

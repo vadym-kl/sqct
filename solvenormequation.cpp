@@ -66,7 +66,7 @@ norm_equation_solution solve_norm_equation(const zs2type &rhs)
 std::vector<zwt> all_solutions(const norm_equation_solution& sln)
 {
   std::vector<zwt> res;
-  zwt common_factor(1,0,0,0);
+  zwt common_factor(unit_power<mpz_class>(make_pair(1,sln.unit_power)));
 
   for( const auto& a : sln.inert )
   {
