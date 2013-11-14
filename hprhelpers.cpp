@@ -20,6 +20,8 @@
 #include "hprhelpers.h"
 #include <gmpxx.h>
 
+#include <cassert>
+
 void hprHelpers::convert(const hprHelpers::hpr_complex &in, std::complex<double> &out)
 {
     out = std::complex<double>( mpfr_get_d( in.real()._x , MPFR_RNDN) , mpfr_get_d( in.imag()._x , MPFR_RNDN) );
@@ -112,4 +114,26 @@ hprr pow2(int n)
 long double to_ld( const hprr& a )
 {
   return mpfr_get_ld( a._x , MPFR_RNDN );
+}
+
+hprr sqrt2pow(long p)
+{
+  assert(p>=0);
+  if( p % 2 == 0 )
+    return pow2(p/2);
+  else
+    return pow2(p/2) * hprHelpers::sqrt2();
+}
+
+long to_long(const hprr &a)
+{
+  if( !mpfr_fits_slong_p(a._x , MPFR_RNDN) )
+    throw std::logic_error("type overflow");
+  return mpfr_get_si( a._x , MPFR_RNDN );
+}
+
+
+double to_double(const hprr &a)
+{
+  return mpfr_get_d( a._x , MPFR_RNDN );
 }

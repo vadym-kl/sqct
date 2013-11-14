@@ -60,5 +60,10 @@ struct hprHelpers
 hprr pow2( int n );
 long double to_ld( const hprr& a );
 
+long to_long( const hprr& a );
+double to_double( const hprr& a );
+
+hprr sqrt2pow( long p );
+
 
 #endif // HPRHELPERS_H

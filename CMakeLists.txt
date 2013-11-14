@@ -55,6 +55,8 @@ add_executable(sqct
  appr/toptzrot2.cpp
  appr/normsolver.cpp
  appr/approxlist.cpp
+ appr/findhalves.cpp
+ appr/rcup.cpp
 
  test.cpp
  factorzs2.cpp
