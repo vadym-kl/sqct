@@ -4,6 +4,8 @@
 #include "solvenormequation.h"
 #include "output.h"
 #include "tcount.h"
+#include "appr/topt-bfs.h"
+#include "appr/cup.h"
 
 #include <iostream>
 #include <sstream>
@@ -254,15 +256,124 @@ void min_t_count_test()
   }
 }
 
+void top_bfs_test()
+{
+  bfs_results br;
+  br.get();
+
+  bfs_results br2;
+  br2.load();
+}
+
+void top_bfs_test2()
+{
+  bfs_results br2;
+  br2.load();
+
+  for( int i = 0; i < br2.max_cost; ++i )
+    cout << i << ":" << br2.m_layers[i].size() << endl;
+
+  std::vector<int> size_stat(100);
+
+  for( int s = 0; s < 2000; ++s )
+  {
+    double angle = s * 1e-4 * M_PI * 2;
+    auto r = br2.cup(angle);
+    if( s % 100 == 0 ) cout << s << endl;
+    for( int i = 0; i <  br2.max_cost; ++i )
+    {
+      if( r[i].second.y.size() > 0 )
+      {
+        auto& snd = r[i].second;
+        if( 2*snd.m - snd.x.abs2().gde() >= 4 )
+        {
+          auto q = min_t_count(r[i].second.x,r[i].second.m,r[i].second.k);
+          assert(q.min_t_count == i);
+
+          assert( q.y.size() == r[i].second.y.size() );
+          size_stat[q.y.size()]++;
+          for( size_t j = 0; j < q.y.size(); ++j )
+          {
+            bool cnd = (q.y[j] == r[i].second.y[j]);
+            if(!cnd)
+            {
+              cout << q.y[j] << "," << r[i].second.y[j] << endl;
+            }
+            assert( cnd );
+          }
+        }
+      }
+    }
+  }
+
+  for( size_t i = 0; i < size_stat.size(); ++i )
+  {
+    if( size_stat[i] != 0 )
+      cout << "{" << i << "," <<size_stat[i] << "}" << endl;
+  }
+
+}
+
+bool deq( double a, double b )
+{
+  const double prec = 1e-7;
+  const double low = 1. - prec;
+  const double high = 1. + prec;
+  return a <= b * high && a >= b * low;
+}
+
+void cup_test()
+{
+
+  bfs_results br2;
+  br2.load();
+
+  {
+    int i = 321;
+    auto r2 = br2.cup( 1e-3 * M_PI * i * 2);
+    cout << r2[10] << endl;
+    cup cp2( 1e-3 * M_PI * i * 2,14,9);
+    cout << cp2.R[10] << endl;
+  }
+
+  for( int i = 0; i < 1000; ++i )
+  {
+    cout << i << endl;
+    double phi = 1e-3 * M_PI * i * 2;
+    auto r = br2.cup(phi);
+    cup cp(phi,14,10);
+    assert( r.size() == cp.R.size() );
+    for( size_t k = 0; k < r.size(); ++k )
+    {
+      bool cnd2 = deq(r[k].first,cp.R[k].first);
+      bool cnd1 = (r[k].second == cp.R[k].second);
+
+      if( ! (cnd1 && cnd2) )
+      {
+        cout << k << "," << phi << endl;
+        assert(!"test failed");
+      }
+    }
+  }
+}
+
 void run_tests()
 {
   cout << "Testing started" << endl;
-  z_factoring_test();
-  zs2normEquationTest();
-  zs2FactoringTest();
-  unit_log_test();
-  norm_solver_test();
-  all_solutions_test();
-  min_t_count_test();
+
+  if(false)
+  {
+    z_factoring_test();
+    zs2normEquationTest();
+    zs2FactoringTest();
+    unit_log_test();
+    norm_solver_test();
+    all_solutions_test();
+    min_t_count_test();
+  }
+  //top_bfs_test();
+  //top_bfs_test2();
+  cup_test();
+
   cout << "Testing finished" << endl;
 }

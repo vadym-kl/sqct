@@ -129,3 +129,13 @@ bool optSequenceGeneratorSdeLim::processMatrix(const optNode &val, int counter)
     }
     return true;
 }
+
+
+bool optSequenceGeneratorCostLim::processMatrix(const optNode &val, int counter)
+{
+  m_cost_stat[val.cost]++;
+  if( m_pq.top()->cost == m_max_cost )
+    return true;
+  else
+    return false;
+}

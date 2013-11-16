@@ -149,6 +149,9 @@ struct ring_int
     /// \brief Sets value to its complex conjugate
     void conjugate_eq();
 
+    ring_int i_canonical() const;
+    ring_int w_canonical() const;
+
     /// \brief Returns complex double precision number approximately equal to
     /// \f$ \frac{1}{\sqrt{2}^d }( a + \omega b + \omega ^ 2 c + \omega ^3 d)\f$
     /// \param d Power of \f$ \sqrt{2} \f$ in the denominator
@@ -195,6 +198,8 @@ struct ring_int
     /// \brief Stores integer coefficients of the ring integer
     int_type v[4];
 };
+
+
 
 /// \brief Represents real integers in the ring.
 template < class TInt >

@@ -385,7 +385,40 @@ ring_int<T> ring_int<T>::g_conjugate() const
 template < class T >
 void ring_int<T>::conjugate_eq()
 {
-    set(v[0],-v[3],-v[2],-v[1]);
+  set(v[0],-v[3],-v[2],-v[1]);
+}
+
+template < class T >
+ring_int<T> ring_int<T>::i_canonical() const
+{
+  ring_int<T> r[8];
+  r[0] = *this;
+  for( int i = 1; i < 4; ++i )
+  {
+    r[i] = r[i-1];
+    r[i].mul_eq_w(2);
+  }
+
+  for( int i = 0; i < 4; ++i )
+    r[i+4] = r[i].conjugate();
+
+  return *std::min_element(std::begin(r),std::end(r));
+}
+
+template < class T >
+ring_int<T> ring_int<T>::w_canonical() const
+{
+  ring_int<T> r[16];
+  r[0] = *this;
+  for( int i = 1; i < 8; ++i )
+  {
+    r[i] = r[i-1];
+    r[i].mul_eq_w();
+  }
+  for( int i = 0; i < 8; ++i )
+    r[i+8] = r[i].conjugate();
+
+  return *std::min_element(std::begin(r),std::end(r));
 }
 
 template < class T >

@@ -23,6 +23,7 @@ struct rcup
 
   rcup_res R;
   interval_t I;
+  interval_t IL;
 
   hprr cos2m[2];
   hprr sin2m[2];

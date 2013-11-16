@@ -16,7 +16,7 @@ halves_t findhalves(const hprr& alpha, int m, const hprr& delta)
 {
   hprr s2m = sqrt2pow(m);
   hprr W(weight(alpha,m));
-  hprr epsilon = delta * s2m;
+  hprr epsilon = delta * s2m * hprHelpers::sqrt2();
   long b = to_long(floor(-s2m));
   long b_max = to_long(ceil(s2m));
   hprr V = alpha * s2m - hprr(b) * hprHelpers::sqrt2();
@@ -34,8 +34,11 @@ halves_t findhalves(const hprr& alpha, int m, const hprr& delta)
     {
       long a = to_long(round(v));
       R.push_back(make_pair(w*to_double(v-a),b));
+      //cout << alpha << "," << a << "," << b << "," << v << "," << w*to_double(v-a) << endl;
       b++;
       v+=ms2;
+
+
     }
   }
   else //generic version

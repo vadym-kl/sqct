@@ -103,7 +103,12 @@ struct matrix2x2
     bool operator <( const matrix2x2<TInt>& B ) const;
     /// \brief Compares integer parts of two matrixes and returns true if they are equal
     bool operator ==( const matrix2x2<TInt>& B ) const;
+
+    int det_power() const;
 };
+
+template < class TInt = long int >
+matrix2x2< TInt > global_phase_canonical( const matrix2x2< TInt >& m );
 
 /// \brief Type for machine precision 2x2 matrices
 typedef std::complex<double> matrix2x2cd[2][2];
@@ -168,7 +173,11 @@ struct matrix2x2hpr
     static const matrix2x2hpr& Y();
     /// \brief Returns reference to matrix2x2hpr initialized to Pauli Z matrix
     static const matrix2x2hpr& Z();
+
+
 };
+
+
 
 /// \brief Multiplication by high precision real number from the left side
 matrix2x2hpr operator*( const matrix2x2hpr::mpclass& val, const matrix2x2hpr& rhs );
@@ -176,7 +185,7 @@ matrix2x2hpr operator*( const matrix2x2hpr::mpclass& val, const matrix2x2hpr& rh
 matrix2x2hpr operator*( const matrix2x2hpr::scalar& val, const matrix2x2hpr& rhs );
 
 /// \brief Trace distance between two matrices, \see Formula (1) in http://arxiv.org/abs/quant-ph/0411206
-double long trace_dist( const matrix2x2hpr& a, const matrix2x2hpr& b );
+double trace_dist( const matrix2x2hpr& a, const matrix2x2hpr& b );
 
 /// \brief Distance induced by operator norm
 double operator_dist( const matrix2x2hpr& a, const matrix2x2hpr& b );

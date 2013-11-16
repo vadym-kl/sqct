@@ -26,6 +26,8 @@
 #include <limits>
 #include <algorithm>
 
+#include <cassert>
+
 using namespace std;
 
 typedef ring_int<int>::mpclass mpclass;
@@ -286,6 +288,17 @@ bool matrix2x2<TInt>::operator ==( const matrix2x2<TInt>& B ) const
   return true;
 }
 
+template < class TInt>
+int matrix2x2<TInt>::det_power() const
+{
+  ring_int<TInt> xc = d[0][0].conjugate();
+  for( int i = 0; i < 8; ++i )
+  {
+    if( xc == d[1][1]) return i;
+    xc.mul_eq_w();
+  }
+}
+
 template < class TInt >
 int matrix2x2<TInt>::h() const
 {
@@ -522,9 +535,11 @@ template matrix2x2<mpz_class>::matrix2x2( const matrix2x2<int>& );
 template matrix2x2<mpz_class>::matrix2x2( const matrix2x2<long>& );
 template matrix2x2< resring<8> >::matrix2x2( const matrix2x2<mpz_class>& );
 
+
+
 //////////////// Helper functions //////////////////////
 
-long double trace_dist( const matrix2x2hpr& a, const matrix2x2hpr& b )
+double trace_dist( const matrix2x2hpr& a, const matrix2x2hpr& b )
 {
     static const mpclass& half = hprHelpers::half();
     static const mpclass& one = hprHelpers::one();
@@ -589,5 +604,26 @@ matrix2x2hpr Rz( const hprr& phi )
 {
   return RzTh ( - phi * hprHelpers::half() );
 }
+
+template<typename TInt>
+matrix2x2<TInt> global_phase_canonical(const matrix2x2<TInt> &m)
+{
+  matrix2x2<TInt> r(m);
+  int k = m.det_power();
+  int p = 8-k/2;
+  r.mul_eq_w(p);
+  assert( r.det_power() == 0 || r.det_power() == 1 );
+
+  ring_int<TInt> x= r.d[0][0];
+  if( x < -x ) r.mul_eq_w(4);
+
+  return r;
+}
+
+template matrix2x2<int> global_phase_canonical(const matrix2x2<int> &m);
+template matrix2x2<long> global_phase_canonical(const matrix2x2<long> &m);
+template matrix2x2<mpz_class> global_phase_canonical(const matrix2x2<mpz_class> &m);
+
+
 
 

@@ -88,7 +88,6 @@ public:
     /// \brief Returns set of all unique elements found
     const nset& unique_elements() const;
 
-private:
     nset m_set;///< set of all unique elements
     pq m_pq; ///< priority queue used during BFS
 };
@@ -121,6 +120,16 @@ public:
     /// \brief Updates statistics per \f$ sde(|\cdot|^2) \f$ and terminates
     /// search when all requested unitaries were found
     virtual bool processMatrix( const optNode& val, int counter );
+};
+
+class optSequenceGeneratorCostLim : public optSequenceGenerator
+{
+public:
+   int m_max_cost;
+   std::vector<int> m_cost_stat;
+
+   optSequenceGeneratorCostLim( int max_cost ) : m_max_cost(max_cost), m_cost_stat(1000) {}
+   virtual bool processMatrix( const optNode& val, int counter );
 };
 
 #endif // OPTSEQUENCEGENERATOR_H

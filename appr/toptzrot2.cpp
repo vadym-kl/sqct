@@ -31,6 +31,7 @@
 
 #include <omp.h>
 
+
 using namespace std;
 using namespace std::chrono;
 typedef matrix2x2<mpz_class> matr;

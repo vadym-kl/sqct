@@ -3,7 +3,7 @@ project (sqct)
 add_definitions("-std=c++0x")
 
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} )
-set( CMAKE_CXX_FLAGS_RELEASE "-O3")
+set( CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 #set( CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
 #set(Boost_USE_STATIC_LIBS ON)
 
@@ -45,6 +45,7 @@ add_executable(sqct
  output.cpp
  gatelibrary.cpp
  symbolic_angle.cpp
+ serializers.h
  
  es/numbersgen.cpp
  es/optsequencegenerator.cpp
@@ -57,6 +58,8 @@ add_executable(sqct
  appr/approxlist.cpp
  appr/findhalves.cpp
  appr/rcup.cpp
+ appr/topt-bfs.cpp
+ appr/cup.cpp
 
  test.cpp
  factorzs2.cpp
