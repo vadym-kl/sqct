@@ -65,15 +65,24 @@ add_executable(sqct
  factorzs2.cpp
  tcount.cpp
  solvenormequation.cpp
+ fixedpoint.cpp
 
  mainA.cpp
 )
 
-set(BOOST_LIBS program_options timer chrono system)
+
+find_package(Boost 1.54.0 REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
+set(BOOST_LIBS program_options chrono timer system )
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
+
+MESSAGE("Used boost libraries:")
+MESSAGE("${Boost_LIBRARIES}")
+
+target_link_libraries(sqct ${Boost_LIBRARIES})
+target_link_libraries(sqct gomp pthread pari mpfr gmpxx gmp rt )
 
 target_link_libraries(sqctSK ${Boost_LIBRARIES})
 target_link_libraries(sqctSK gomp pthread mpfr gmpxx gmp rt)
 
-target_link_libraries(sqct ${Boost_LIBRARIES})
-target_link_libraries(sqct gomp pthread pari mpfr gmpxx gmp rt )

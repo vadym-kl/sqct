@@ -20,6 +20,7 @@
 #include "output.h"
 
 #include "appr/zrot_cache.h"
+#include "appr/topt-bfs.h"
 #include "test.h"
 
 #include <fstream>
@@ -93,6 +94,9 @@ int main(int ac, char* av[])
             ("test,T", po::value< string >(&(topt.in_filename))->implicit_value("generic"),
              "Run tests")
 
+            ("bfs,B", po::value< string >(&(topt.in_filename))->implicit_value("generic"),
+             "Run tests")
+
             ("gen,G", po::value< string >(&(topt.in_filename)),
              "File name with unitaries for approximation. Example: -G in ")
 
@@ -141,6 +145,13 @@ int main(int ac, char* av[])
             tapp.run();
             return 0;
         }
+
+        if( vm.count("bfs") ) {
+            bfs_results br;
+            br.get();
+            return 0;
+        }
+
 
         if( vm.count("in") ) {
             sqct_light_app lapp(sp);

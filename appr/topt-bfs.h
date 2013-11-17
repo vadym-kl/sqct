@@ -29,7 +29,7 @@
 class toptbfs
 {
 public:
-    static const int max_cost = 14;
+    static const int max_cost = 18;
     /// \brief Initialized by call of init()
     toptbfs() ;
     /// \brief Start exhaustive search of T-optimal circuits
@@ -55,7 +55,7 @@ struct float_index_entry
 
 struct bfs_results
 {
-  static const int max_cost = toptbfs::max_cost;
+  static const int max_cost = toptbfs::max_cost + 1;
 
   bfs_results() {}
   void get();

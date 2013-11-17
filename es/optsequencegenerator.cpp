@@ -19,6 +19,8 @@
 #include "optsequencegenerator.h"
 #include <stdexcept>
 
+#include "output.h"
+
 using namespace std;
 
 optSequenceGenerator::optSequenceGenerator()
@@ -133,6 +135,12 @@ bool optSequenceGeneratorSdeLim::processMatrix(const optNode &val, int counter)
 
 bool optSequenceGeneratorCostLim::processMatrix(const optNode &val, int counter)
 {
+  if( counter % 100000 == 0 )
+  {
+    cout << counter << ":" << endl;
+    cout << m_cost_stat << endl;
+  }
+
   m_cost_stat[val.cost]++;
   if( m_pq.top()->cost == m_max_cost )
     return true;

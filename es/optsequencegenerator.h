@@ -126,6 +126,7 @@ class optSequenceGeneratorCostLim : public optSequenceGenerator
 {
 public:
    int m_max_cost;
+
    std::vector<int> m_cost_stat;
 
    optSequenceGeneratorCostLim( int max_cost ) : m_max_cost(max_cost), m_cost_stat(1000) {}

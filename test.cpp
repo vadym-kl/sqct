@@ -341,7 +341,7 @@ void cup_test()
     cout << i << endl;
     double phi = 1e-3 * M_PI * i * 2;
     auto r = br2.cup(phi);
-    cup cp(phi,14,10);
+    cup cp(phi,19,8);
     assert( r.size() == cp.R.size() );
     for( size_t k = 0; k < r.size(); ++k )
     {
