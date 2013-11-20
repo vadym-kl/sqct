@@ -5,12 +5,15 @@
 
 struct norm_equation_solution
 {
-  norm_equation_solution() : exists(false), unit_power(0) {}
+  norm_equation_solution() : exists(false), unit_power(0), norm_solver_calls(0), factor_calls(0) {}
   bool exists;
   long unit_power;
   std::vector< std::pair<zwt,long> > ramified;
   std::vector< std::pair<zwt,long> > split;
   std::vector< std::pair<zwt,long> > inert;
+
+  long norm_solver_calls;
+  long factor_calls;
 
   operator zwt()
   {

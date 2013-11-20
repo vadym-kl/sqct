@@ -76,6 +76,9 @@ static void genToMpz( GEN gen, mpz_class& out, bool& div )
 
 bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> &res) const
 {
+
+  pari_sp av = avma;
+
   stringstream ss;
   ss << "(" << rhs[0] << ")+(" << rhs[1] << ")*z";
   GEN in = gp_read_str(ss.str().c_str());
@@ -83,7 +86,10 @@ bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> 
 
   bool ok =  gequal1(gel(solution,2));
   if( !ok ) //there is no solution
+  {
+    avma = av;
     return false;
+  }
 
   GEN re_a = 0, re_b = 0, im_a = 0, im_b = 0;
   GEN sln = gel(gel(solution,1),2);
@@ -151,12 +157,14 @@ bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> 
     throw std::logic_error("unexpected solution");
   }
 
-
+  avma = av;
   return true;
 }
 
 bool normSolver::solve(const mpz_class &rhs, ring_int_real<mpz_class> &res) const
 {
+   pari_sp av = avma;
+
    stringstream ss;
    ss << rhs;
    GEN in = gp_read_str(ss.str().c_str());
@@ -166,7 +174,10 @@ bool normSolver::solve(const mpz_class &rhs, ring_int_real<mpz_class> &res) cons
 
    bool ok =  gequal1(gel(sln,2));
    if( !ok ) //there is no solution
+   {
+     avma = av;
      return false;
+   }
 
    GEN val = gel(sln,1);
    assert( typ(val) == t_POLMOD );
@@ -184,8 +195,8 @@ bool normSolver::solve(const mpz_class &rhs, ring_int_real<mpz_class> &res) cons
 
    res.make_positive();
 
+   avma = av;
    return true;
-
 }
 
 bool normSolver::solve( const ring_int<mpz_class>& u00, int denompower, m& matr ) const
@@ -214,6 +225,8 @@ zfactorization normSolver::factor(const mpz_class &number) const
 {
   mpz_class n;
   zfactorization res;
+
+  pari_sp av = avma;
 
   if( number < 0 )
   {
@@ -252,6 +265,8 @@ zfactorization normSolver::factor(const mpz_class &number) const
     genToMpz(power,pw);
     res.prime_factors.push_back(make_pair(pr,pw.get_si()));
   }
+
+  avma = av;
 
   return res;
 }

@@ -7,6 +7,9 @@
 #include "appr/topt-bfs.h"
 #include "appr/cup.h"
 
+#include "fixedpoint.h"
+#include "appr/findhalves.h"
+
 #include <iostream>
 #include <sstream>
 #include <cassert>
@@ -322,19 +325,35 @@ bool deq( double a, double b )
   return a <= b * high && a >= b * low;
 }
 
+void cup_test0()
+{
+
+  const bfs_results& br2 = bfs_results::instance();
+
+
+  for( int i = 9; i < 10; ++i )
+  {
+    cout << i << endl;
+    double phi = 1e-3 * M_PI * i * 2;
+    cup cp(phi,120,8);
+    for( int i = 0; i < cp.R.size(); ++i )
+      cout << cp.R[i] << endl;
+
+  }
+}
+
 void cup_test()
 {
 
-  bfs_results br2;
-  br2.load();
+  const bfs_results& br2 = bfs_results::instance();
 
-  {
-    int i = 321;
-    auto r2 = br2.cup( 1e-3 * M_PI * i * 2);
-    cout << r2[10] << endl;
-    cup cp2( 1e-3 * M_PI * i * 2,14,9);
-    cout << cp2.R[10] << endl;
-  }
+//  {
+//    int i = 321;
+//    auto r2 = br2.cup( 1e-3 * M_PI * i * 2);
+//    cout << r2[10] << endl;
+//    cup cp2( 1e-3 * M_PI * i * 2,14,9);
+//    cout << cp2.R[10] << endl;
+//  }
 
   for( int i = 0; i < 1000; ++i )
   {
@@ -345,14 +364,132 @@ void cup_test()
     assert( r.size() == cp.R.size() );
     for( size_t k = 0; k < r.size(); ++k )
     {
+      cp.R[k].second.to_canonical_form();
       bool cnd2 = deq(r[k].first,cp.R[k].first);
       bool cnd1 = (r[k].second == cp.R[k].second);
 
       if( ! (cnd1 && cnd2) )
       {
         cout << k << "," << phi << endl;
+        cout << r[k] << endl;
+        cout << cp.R[k] << endl;
+        throw std::logic_error("test failed");
         assert(!"test failed");
       }
+    }
+  }
+}
+
+void fixed_point_test()
+{
+  fixedpoint fp(0x0.1p2);
+  assert( fp.m_value.str() == "85070591730234615865843651857942052864");
+  fixedpoint fp2(-0x0.1p2);
+  assert( fp2.m_value.str() == "-85070591730234615865843651857942052864");
+
+  {
+    fixedpoint fp3(hprr(0x1) - hprr(0x0.1p-100));
+    auto r = fp3.round_ex();
+    assert( r.first == 1 );
+    assert( r.second == -0x0.1p-100 );
+  }
+
+  {
+    fixedpoint fp3(hprr(0x1) + hprr(0x0.1p-100));
+    auto r = fp3.round_ex();
+    assert( r.first == 1 );
+    assert( r.second == 0x0.1p-100 );
+  }
+
+  {
+    fixedpoint fp3(hprr(-0x1) + hprr(0x0.1p-100));
+    auto r = fp3.round_ex();
+    assert( r.first == -1 );
+    assert( r.second == 0x0.1p-100 );
+  }
+
+  {
+    fixedpoint fp3(hprr(-0x1) - hprr(0x0.1p-100));
+    auto r = fp3.round_ex();
+    assert( r.first == -1 );
+    assert( r.second == -0x0.1p-100 );
+  }
+
+}
+
+void find_halves_test()
+{
+  {
+    hprr alpha("9.9960030765025653916472196141157044168899382427358833309878023604704251874674209603340528019184816033e-01");
+    long m(16);
+    hprr delta("9.8617338907730153763075975348328938707709312438964843750000000000000000000000000000000000000000000000e-04");
+    halves_t r = findhalves(alpha,m,delta);
+    halves_t r2 = findhalves3(alpha,m,delta);
+    assert( r.size() == r2.size() );
+    for( size_t i = 0; i < r.size(); ++i )
+    {
+        assert( deq(fabs(r[i].first),fabs(r2[i].first)));
+        assert( r[i].second == r2[i].second );
+    }
+  }
+
+  {
+    hprr alpha("9.9992104420381612026942755893826403002246849839703724203962821237400276809088717664176342229272570725e-01");
+    long m(10);
+    hprr delta("8.8857074104356590510400693005976791027933359146118164062500000000000000000000000000000000000000000000e-03");
+
+    halves_t r = findhalves(alpha,m,delta);
+    halves_t r2 = findhalves3(alpha,m,delta);
+    assert( r.size() == r2.size() );
+    for( size_t i = 0; i < r.size(); ++i )
+    {
+        assert( deq(fabs(r[i].first),fabs(r2[i].first)));
+        assert( r[i].second == r2[i].second );
+    }
+  }
+
+  {
+    hprr alpha("-1.2566039883352608187672610856666731983394323065204845258363629579417369912676281256888702298352761823e-02");
+    long m(10);
+    hprr delta("8.8857074104356590510400693005976791027933359146118164062500000000000000000000000000000000000000000000e-03");
+
+    halves_t r = findhalves(alpha,m,delta);
+    halves_t r2 = findhalves3(alpha,m,delta);
+    assert( r.size() == r2.size() );
+    for( size_t i = 0; i < r.size(); ++i )
+    {
+        assert( deq(fabs(r[i].first),fabs(r2[i].first)));
+        assert( r[i].second == r2[i].second );
+    }
+  }
+
+  {
+    hprr alpha("9.2861540214101732528380304506713152568433696836883918905549505561572424185761488749492284487925775056e-01");
+    long m(10);
+    hprr delta("8.8857074104356590510400693005976791027933359146118164062500000000000000000000000000000000000000000000e-03");
+
+    halves_t r = findhalves(alpha,m,delta);
+    halves_t r2 = findhalves3(alpha,m,delta);
+    assert( r.size() == r2.size() );
+    for( size_t i = 0; i < r.size(); ++i )
+    {
+        assert( deq(fabs(r[i].first),fabs(r2[i].first)));
+        assert( r[i].second == r2[i].second );
+    }
+  }
+
+  {
+    hprr alpha("3.7104371023705101416374080709529764064387038751930372101481583631380031572669773740884678578455403250e-01");
+    long m(10);
+    hprr delta("8.8857074104356590510400693005976791027933359146118164062500000000000000000000000000000000000000000000e-03");
+
+    halves_t r = findhalves(alpha,m,delta);
+    halves_t r2 = findhalves3(alpha,m,delta);
+    assert( r.size() == r2.size() );
+    for( size_t i = 0; i < r.size(); ++i )
+    {
+        assert( deq(fabs(r[i].first),fabs(r2[i].first)));
+        assert( r[i].second == r2[i].second );
     }
   }
 }
@@ -360,6 +497,9 @@ void cup_test()
 void run_tests()
 {
   cout << "Testing started" << endl;
+  //fixed_point_test();
+  //min_t_count_test();
+  //return;
 
   if(false)
   {
@@ -369,11 +509,12 @@ void run_tests()
     unit_log_test();
     norm_solver_test();
     all_solutions_test();
-    min_t_count_test();
+
   }
   //top_bfs_test();
   //top_bfs_test2();
-  cup_test();
+  find_halves_test();
+  cup_test0();
 
   cout << "Testing finished" << endl;
 }

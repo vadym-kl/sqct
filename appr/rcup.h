@@ -1,11 +1,16 @@
 #ifndef RCUP_H
 #define RCUP_H
 
+#include "observations.h"
+
 #include "tcount.h"
 #include "hprhelpers.h"
 #include "findhalves.h"
 
+
 #include <array>
+
+
 
 struct rcup
 {
@@ -30,6 +35,8 @@ struct rcup
   hprr reW[2];
   hprr imW[2];
   res_tuples_arr out;
+
+  observations obs;
 };
 
 

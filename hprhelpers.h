@@ -19,6 +19,8 @@
 #ifndef HPRHELPERS_H
 #define HPRHELPERS_H
 
+#include <gmpxx.h>
+
 #define MPFR_REAL_DATA_PUBLIC
 #include "real.hpp"
 #include <complex>
@@ -61,6 +63,7 @@ hprr pow2( int n );
 long double to_ld( const hprr& a );
 
 long to_long( const hprr& a );
+mpz_class to_mpz( const hprr& a );
 double to_double( const hprr& a );
 
 hprr sqrt2pow( long p );

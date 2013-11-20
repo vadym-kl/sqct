@@ -2,6 +2,8 @@
 #include "appr/normsolver.h"
 #include <cassert>
 
+#include "output.h"
+
 using namespace std;
 
 norm_equation_solution solve_norm_equation(const zs2type &rhs)
@@ -12,7 +14,10 @@ norm_equation_solution solve_norm_equation(const zs2type &rhs)
   if( ! (rhs.non_negative() && rhs.g_conjugate().non_negative() ) )
     return res;
 
+  //cout << rhs << "," << endl;
+
   auto Fz = factorize(rhs.norm());
+  res.factor_calls = 1;
   res.exists = is_solvable(Fz);
 
   const auto& ns = normSolver::instance();
@@ -30,6 +35,7 @@ norm_equation_solution solve_norm_equation(const zs2type &rhs)
         if( a.first[1] == 0 ) // rational prime
         {
           bool r = ns.solve(a.first,ans);
+          res.norm_solver_calls++;
           assert(r);
           res.split.push_back(make_pair(ans,a.second));
         }
@@ -40,6 +46,7 @@ norm_equation_solution solve_norm_equation(const zs2type &rhs)
           if( md == 1 )
           {
             bool r = ns.solve(a.first,ans);
+            res.norm_solver_calls++;
             assert(r);
             res.split.push_back(make_pair(ans,a.second));
           }
@@ -56,8 +63,6 @@ norm_equation_solution solve_norm_equation(const zs2type &rhs)
       res.unit_power = Fzs2.unit_power / 2;
     }
   }
-
-
 
   return res;
 }

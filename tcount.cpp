@@ -11,20 +11,41 @@
 
 using namespace std;
 
-std::pair<int,long> min_w_t_count( const zwt& x, const zwt& y, long m, long k )
+template < class T >
+int chop( const T& x )
 {
-  zwt ycm = -y.conjugate();
-  matrix2x2<mpz_class> mtr(x, ycm * zwt::omega(k),
-                           y, x.conjugate() * zwt::omega(k), m );
-  assert(mtr.is_unitary());
+  if( x > 0 )
+  {
+    return mpz_class(x & 0xFFFF).get_si();
+  }
+  else
+    return -mpz_class((-x) & 0xFFFF).get_si();
+}
+
+template < class T >
+ring_int<int> chop( const ring_int<T>& x )
+{
+  ring_int<int> r(chop(x.v[0]),chop(x.v[1]),chop(x.v[2]),chop(x.v[3]));
+  return r;
+}
+
+std::pair<int,long> min_w_t_count( const zwt& xc, const zwt& yc, long m, long k )
+{
+  ring_int<int> x = chop(xc);
+  ring_int<int> y = chop(yc);
+
+  ring_int<int> ycm = -y.conjugate();
+  matrix2x2<int> mtr(x, ycm * ring_int<int>::omega(k),
+                           y, x.conjugate() * ring_int<int>::omega(k), m );
+  //assert(mtr.is_unitary());
 
   int min_i = 0;
   long min_tc = mtr.t();
 
   for( int i = 1; i < 2; ++i )
   {
-    mtr.d[1][0] = y * zwt::omega(i);
-    mtr.d[0][1] = ycm * zwt::omega(8-i+k);
+    mtr.d[1][0] = y * ring_int<int>::omega(i);
+    mtr.d[0][1] = ycm * ring_int<int>::omega(8-i+k);
     int t = mtr.t();
     if( t < min_tc )
     {
@@ -73,13 +94,17 @@ min_unitaries min_t_count(const zwt &x, long m, int k)
       {
         res.min_t_count = n0 - 2 + d;
         swap( y[d], res.y );
-        res.to_canonical_form();
+        //res.to_canonical_form();
+        res.factor_calls = sln.factor_calls;
+        res.norm_solver_calls = sln.norm_solver_calls;
         return res;
       }
     }
 
   }
 
+  res.factor_calls = sln.factor_calls;
+  res.norm_solver_calls = sln.norm_solver_calls;
   return res;
 }
 

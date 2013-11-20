@@ -6,6 +6,8 @@
 
 #include "output.h"
 
+#include "timemeasurement.h"
+
 using namespace std;
 
 double min_positive_first( const halves_t& hv )
@@ -43,14 +45,15 @@ void rcup::merge_halves( const halves_t& re, const halves_t& im, int k )
   for( size_t j = 0; j < sz; ++j )
   {
     const auto& re_j = re[j];
-    long a = recover_real(re_j,k);
+
     auto II = get_interval( im, I.first - re_j.first,I.second - re_j.first );
     for( auto jj = II.first; jj != II.second; ++jj )
     {
       double val = jj->first + re_j.first;
       if( val >= IL.first && val <= IL.second )
       {
-        long c = recover_imag(*jj,k);;
+        long c = recover_imag(*jj,k);
+        long a = recover_real(re_j,k);
         out.push_back(make_pair(jj->first + re_j.first,std::array<long,5>{a,re_j.second,c,jj->second,k}));
       }
     }
@@ -73,6 +76,8 @@ long rcup::recover_imag(const halves_t::value_type &a, int k) const
 
 rcup::rcup(long n, const hprr &phi, const hprr &delta)
 {
+  obs.n = n; obs.phi = phi; obs.delta = delta;
+
   R.first = delta;
 
   long m = floor(n/2) + 3;
@@ -86,8 +91,15 @@ rcup::rcup(long n, const hprr &phi, const hprr &delta)
     reW[k] = weight( cos( theta ) ,m );
     imW[k] = weight( sin( theta ) ,m );
 
-    L_re[k] = findhalves(cos( theta ), m, delta  );
-    L_im[k] = findhalves(sin( theta ), m, delta  );
+    timepoint t1,t2;
+
+    get_timepoint(t1);
+    L_re[k] = findhalves3(cos( theta ), m, delta  );
+    L_im[k] = findhalves3(sin( theta ), m, delta  );
+    get_timepoint(t2);
+
+    obs.halves_size += (L_re[k].size() + L_im[k].size());
+    obs.find_halves_time += time_diff_d(t1,t2);
   }
 
   I = interval_t( 0,min( min_positive_first(L_re[0]), min_positive_first(L_re[1]) ) );
@@ -102,12 +114,24 @@ rcup::rcup(long n, const hprr &phi, const hprr &delta)
     IL.first = I.first * (1. - 1e-5 );
     IL.second = I.second * (1. + 1e-5 );
 
+    timepoint t1,t2;
+    get_timepoint(t1);
+
     for( int k = 0; k < 2; ++k )
       merge_halves( L_re[k], L_im[k], k);
 
+    get_timepoint(t2);
+    obs.merge_halves_time += time_diff_d(t1,t2);
+
     std::sort(out.begin(),out.end());
 
+    obs.max_tuples_memory_size = std::max( obs.max_tuples_memory_size, out.size() );
+    obs.tuples_processed += out.size();
+
     size_t sz_max = out.size();
+
+    timepoint t3,t4;
+    get_timepoint(t3);
 
     for( size_t j = 0; j < sz_max; ++j )
     {
@@ -117,6 +141,8 @@ rcup::rcup(long n, const hprr &phi, const hprr &delta)
       xp.div_eq_sqrt2(dm);
 
       R.second = min_t_count(xp,m-dm,o.second[4]);
+      obs.factor_calls += R.second.factor_calls;
+      obs.norm_equation_calls += R.second.norm_solver_calls;
       if( n == R.second.min_t_count )
       {
 //        cout << R.second.min_t_count << endl;
@@ -125,9 +151,14 @@ rcup::rcup(long n, const hprr &phi, const hprr &delta)
 //        cout << m-dm << endl;
 //        cout << o.second[4] << endl;
         R.first = sqrt(o.first);
+        get_timepoint(t4);
+        obs.tcount_time += time_diff_d(t3,t4);
         return;
       }
     }
+
+    get_timepoint(t4);
+    obs.tcount_time += time_diff_d(t3,t4);
 
     out.clear();
     double t = (I.second - I.first) * 2.0;
@@ -135,6 +166,8 @@ rcup::rcup(long n, const hprr &phi, const hprr &delta)
     I.second = min(I.first + t,dl);
   }
 
+  R.second.m = 0;
+  R.second.min_t_count = -1;
   R.second.x = zwt(0,0,0,0);
   R.second.y.clear();
 }

@@ -118,20 +118,20 @@ double dist( const pair<double,double>& x, double phi, int k )
   return sqrt(min(v1,v2));
 }
 
-std::vector<std::pair< double, min_unitaries>> bfs_results::cup(const hprr &phi)
+std::vector<std::pair< double, min_unitaries>> bfs_results::cup(const hprr &phi, int max_layer ) const
 {
   std::vector<std::pair< double, min_unitaries> > R;
-  R.resize(max_cost);
+  R.resize(max_layer);
   double precision = 1e-10;
 
   R[0] = cupl(phi,0,dist(make_pair(1.,0),to_ld(phi),0));
-  for( int layer = 1; layer < max_cost; ++layer )
+  for( int layer = 1; layer < max_layer; ++layer )
     R[layer] = cupl(phi,layer,R[layer-1].first);
 
   return R;
 }
 
-std::pair< double, min_unitaries> bfs_results::cupl(const hprr &phi, int layer, double min_dist)
+std::pair< double, min_unitaries> bfs_results::cupl(const hprr &phi, int layer, double min_dist) const
 {
   double precision = 1e-10;
   std::pair< double, min_unitaries> R;
@@ -210,6 +210,13 @@ string bfs_results::filename( int layer )
   stringstream ss;
   ss << "bfs-layer-" << layer;
   return ss.str();
+}
+
+const bfs_results &bfs_results::instance()
+{
+  static bfs_results res;
+  res.load();
+  return res;
 }
 
 

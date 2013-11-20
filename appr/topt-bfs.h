@@ -62,14 +62,16 @@ struct bfs_results
   void load();
   std::string filename(int layer);
 
+  static const bfs_results& instance();
+
   typedef std::vector< matrix2x2<int> > layer_t;
   typedef std::vector< float_index_entry > float_index_t;
 
   std::vector< layer_t > m_layers;
   std::vector< float_index_t > m_index;
 
-  std::vector<std::pair< double, min_unitaries>> cup(const hprr& phi);
-  std::pair< double, min_unitaries> cupl(const hprr& phi, int layer, double min_dist );
+  std::vector<std::pair< double, min_unitaries>> cup(const hprr& phi, int max_layer = max_cost ) const;
+  std::pair< double, min_unitaries> cupl(const hprr& phi, int layer, double min_dist ) const;
 };
 
 #endif // TOPTBFS_H

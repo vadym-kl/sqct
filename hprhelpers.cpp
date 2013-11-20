@@ -137,3 +137,11 @@ double to_double(const hprr &a)
 {
   return mpfr_get_d( a._x , MPFR_RNDN );
 }
+
+
+mpz_class to_mpz(const hprr &a)
+{
+  mpz_class res;
+  mpfr_get_z(res.get_mpz_t(), a._x , MPFR_RNDN );
+  return res;
+}
