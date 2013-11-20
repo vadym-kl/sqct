@@ -37,6 +37,7 @@ add_executable(sqctSK
 )
 
 add_executable(sqct
+ requestprocessor.cpp
  hprhelpers.cpp
  resring.cpp
  rint.cpp

@@ -1,3 +1,22 @@
+//     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com
+//
+//     This file is part of SQCT.
+//
+//     SQCT is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Lesser General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     SQCT is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Lesser General Public License for more details.
+//
+//     You should have received a copy of the GNU Lesser General Public License
+//     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+
 #include "tcount.h"
 #include "factorzs2.h"
 #include "solvenormequation.h"
@@ -172,6 +191,30 @@ bool min_unitaries::operator ==(const min_unitaries &rhs) const
   }
 
   return true;
+}
+
+string min_unitaries::short_title()
+{
+  stringstream ss;
+  ss << "{\"x[0]\",\"x[1]\",\"x[2]\",\"x[3]\"}" << "," <<
+        "{\"y[0]\",\"y[1]\",\"y[2]\",\"y[3]\"}" << "," <<
+        "\"m\"," <<
+        "\"k\"," << "\"Solutions\"";
+  return ss.str();
+}
+
+string min_unitaries::short_str() const
+{
+  stringstream ss;
+  ss << x << "," << y << "," << m << "," << k << "," << y.size();
+  return ss.str();
+}
+
+min_unitaries::operator matrix2x2<mpz_class>() const
+{
+  matrix2x2<mpz_class> r(x,-y[0].conjugate() * zwt::omega(k),
+      y[0] , x.conjugate()*zwt::omega(k), m);
+  return r;
 }
 
 

@@ -1,3 +1,22 @@
+//     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com
+//
+//     This file is part of SQCT.
+//
+//     SQCT is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Lesser General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     SQCT is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Lesser General Public License for more details.
+//
+//     You should have received a copy of the GNU Lesser General Public License
+//     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+
 #include "rcup.h"
 #include "findhalves.h"
 
@@ -92,14 +111,18 @@ rcup::rcup(long n, const hprr &phi, const hprr &delta)
     imW[k] = weight( sin( theta ) ,m );
 
     timepoint t1,t2;
+    timepoint t1r,t2r;
 
     get_timepoint(t1);
+    get_timepoint_real(t1r);
     L_re[k] = findhalves3(cos( theta ), m, delta  );
     L_im[k] = findhalves3(sin( theta ), m, delta  );
     get_timepoint(t2);
+    get_timepoint_real(t2r);
 
     obs.halves_size += (L_re[k].size() + L_im[k].size());
-    obs.find_halves_time += time_diff_d(t1,t2);
+    obs.find_halves_real_time += time_diff_d(t1r,t2r);
+    obs.find_halves_cpu_time += time_diff_d(t1,t2);
   }
 
   I = interval_t( 0,min( min_positive_first(L_re[0]), min_positive_first(L_re[1]) ) );
@@ -166,6 +189,7 @@ rcup::rcup(long n, const hprr &phi, const hprr &delta)
     I.second = min(I.first + t,dl);
   }
 
+  R.second.k = 0;
   R.second.m = 0;
   R.second.min_t_count = -1;
   R.second.x = zwt(0,0,0,0);

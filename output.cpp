@@ -42,12 +42,12 @@ std::ostream& operator<<(std::ostream& out, const matrix2x2hpr& A )
 template < class TInt >
 std::ostream& operator<<(std::ostream& out, const ring_int<TInt>& x )
 {
-  out << "ringInt[";
+  out << "{";
   for( int i = 0 ; i < 4 ; ++i )
     if( i != 3 )
       out << x[i] << ",";
     else
-      out << x[i] << "]";
+      out << x[i] << "}";
   return out;
 }
 

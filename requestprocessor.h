@@ -16,42 +16,12 @@
 //     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
-#ifndef TCOUNT_H
-#define TCOUNT_H
-
-#include "rint.h"
-#include "matrix2x2.h"
+#ifndef REQUESTPROCESSOR_H
+#define REQUESTPROCESSOR_H
 
 #include <vector>
 #include <string>
-#include <iostream>
 
-struct min_unitaries
-{
-  min_unitaries() : min_t_count(-1), k(0), m(0), factor_calls(0), norm_solver_calls(0) {}
+int process_request( const std::vector<std::string>& request );
 
-  long min_t_count;
-  zwt x;
-  std::vector<zwt> y;
-  int k; // determinant is \w^k
-  long m; // power of \sqrt{2} in denominator
-  void to_canonical_form();
-  bool operator == ( const min_unitaries& rhs ) const;
-
-  static std::string short_title();
-  std::string short_str() const;
-
-  long factor_calls;
-  long norm_solver_calls;
-
-  operator matrix2x2<mpz_class> () const;
-
-
-};
-
-std::ostream& operator<< (  std::ostream& out , const min_unitaries& mu );
-min_unitaries min_t_count( const zwt& x, long m, int k );
-
-
-#endif // TCOUNT_H
+#endif // REQUESTPROCESSOR_H

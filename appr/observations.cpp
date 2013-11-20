@@ -1,3 +1,23 @@
+//     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com
+//
+//     This file is part of SQCT.
+//
+//     SQCT is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Lesser General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     SQCT is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Lesser General Public License for more details.
+//
+//     You should have received a copy of the GNU Lesser General Public License
+//     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+
+
 #include "observations.h"
 
 #include <sstream>
@@ -13,7 +33,8 @@ std::ostream &operator <<(std::ostream &out, const observations &o)
       to_ld(o.phi) << "," <<
       to_ld(o.delta) << "," <<
 
-      o.find_halves_time << "," <<
+      o.find_halves_real_time << "," <<
+      o.find_halves_cpu_time << "," <<
       o.merge_halves_time << "," <<
       o.tcount_time << "," <<
 
@@ -32,7 +53,8 @@ observations::observations() :
   phi(0),
   delta(0),
 
-  find_halves_time(0),
+  find_halves_real_time(0),
+  find_halves_cpu_time(0),
   merge_halves_time(0),
   tcount_time(0),
 
@@ -54,7 +76,8 @@ std::string observations::title()
       "\"phi\"" << "," <<
       "\"delta\"" << "," <<
 
-      "\"find_halves_time\"" << "," <<
+      "\"find_halves_real_time\"" << "," <<
+      "\"find_halves_cpu_time\"" << "," <<
       "\"merge_halves_time\"" << "," <<
       "\"tcount_time\"" << "," <<
 

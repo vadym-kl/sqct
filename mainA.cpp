@@ -23,6 +23,8 @@
 #include "appr/topt-bfs.h"
 #include "test.h"
 
+#include "requestprocessor.h"
+
 #include <fstream>
 #include <sstream>
 #include <chrono>
@@ -34,10 +36,14 @@
 
 // command line parcing code based on http://www.boost.org/doc/libs/1_49_0/doc/html/program_options/tutorial.html#id2499896
 // and BOOST_ROOT/libs/program_options/example/first.cpp
+
 namespace po = boost::program_options;
 namespace btm = boost::timer;
 
 using namespace std;
+
+
+////////////////////////////////////////////////////////////////////
 
 static bool print_help( const string& topic )
 {
@@ -48,7 +54,6 @@ static bool print_help( const string& topic )
         cout << hi[topic] << endl;
         return true;
     }
-
     return false;
 }
 
@@ -76,12 +81,8 @@ cout << "" << endl;
 
 int main(int ac, char* av[])
 {
-
     string help_topic;
-    DiffApplicationParams diff_params;
-    topt_app_params topt{80,"in","rz"};
-    sqct_light_params sp;
-
+    string file_name = "in.txt";
     try {
 
         po::options_description desc("Allowed options");
@@ -91,32 +92,14 @@ int main(int ac, char* av[])
              "Produce help message, see help <option name> for more details "
              "about specific option.")
 
-            ("test,T", po::value< string >(&(topt.in_filename))->implicit_value("generic"),
+            ("test,T", po::value< string >(&(file_name))->implicit_value("generic"),
              "Run tests")
 
-            ("bfs,B", po::value< string >(&(topt.in_filename))->implicit_value("generic"),
-             "Run tests")
+            ("bfs,B", po::value< string >(&(file_name))->implicit_value("generic"),
+             "Run BFS for T-optimal circuits")
 
-            ("gen,G", po::value< string >(&(topt.in_filename)),
-             "File name with unitaries for approximation. Example: -G in ")
-
-//            ("in,I", po::value< string >(&(topt.in_filename)),
-//             "File name with unitaries for approximation. Example: -I sample")
-
-            ("cache,C", po::value< string >(&(topt.out_filename))->default_value("rz.csv"),
-             "File name with summary about "
-             "all unitary approximation results.")
-
-            ("out,O", po::value< string >(&(sp.out_filename))->default_value("out.qgl.xml"),
-             "File name with "
-             "unitary approximation results.")
-
-            ("max-sde,M", po::value< int >(&(topt.max_sde))->default_value(80),
-             "Maximal value of sde to use during approximation step.")
-
-            ("diff,D", po::value< vector<string> >(&(diff_params.filenames) )->multitoken(),
-             "Compares to caches of rotations approximations. "
-             "Example: -D original/rz.csv rz.csv")
+            ("gen,G", po::value< string >(&(file_name))->implicit_value("in.txt"),
+             "Run unitaries approximation. Example: -G in ")
 
             ("about", "Information about the program.")
         ;
@@ -125,24 +108,8 @@ int main(int ac, char* av[])
         po::store(po::parse_command_line(ac, av, desc), vm);
         po::notify(vm);
 
-        sp.cache_filename = topt.out_filename;
-        sp.in_filename = topt.in_filename;
-
-        if( vm.count("diff") )
-        {
-          DiffApplication da(diff_params);
-          da.run();
-          return 0;
-        }
-
         if( vm.count("about") ) {
             print_about_message();
-            return 0;
-        }
-
-        if( vm.count("gen") ) {
-            topt_app tapp(topt);
-            tapp.run();
             return 0;
         }
 
@@ -152,22 +119,40 @@ int main(int ac, char* av[])
             return 0;
         }
 
-
-        if( vm.count("in") ) {
-            sqct_light_app lapp(sp);
-            lapp.run();
-            return 0;
-        }
-
         if( vm.count("test") ) {
             run_tests();
             return 0;
         }
 
+        if( vm.count("help") ) {
+            print_help(help_topic);
+            return 0;
+        }
+
+        //by default we will start appropximating unitaries from in.txt
         {
+          ifstream ifs(file_name);
+          if( ifs )
+          {
+            std::vector<string> lines;
+            while(ifs)
+            {
+              string line;
+              getline(ifs,line);
+              if(line.size() == 0)
+                continue;
+              if(line[0] == '#')
+                continue;
+              lines.push_back(line);
+            }
+            process_request(lines);
+          }
+          else
+          {
             if( !print_help(help_topic) )
                 cout << desc << endl;
             return 0;
+          }
         }
 
     }

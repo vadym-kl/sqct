@@ -63,11 +63,11 @@ gateLibrary::gateLibrary() :
     matrix_str[Id] = "Id";
     matrix_str[T] = "T";
     matrix_str[P] = "P";
-    matrix_str[TP] = "T*.Z";
+    matrix_str[TP] = "Td.Z";
     matrix_str[Z] = "Z";
     matrix_str[TZ] = "T.Z";
-    matrix_str[Pd] = "P*";
-    matrix_str[Td] = "T*";
+    matrix_str[Pd] = "Pd";
+    matrix_str[Td] = "Td";
     matrix_str[H] = "H";
     matrix_str[X] = "X";
     matrix_str[Y] = "Y";

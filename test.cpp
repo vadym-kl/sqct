@@ -1,3 +1,22 @@
+//     Copyright (c) 2012 Vadym Kliuchnikov sqct(dot)software(at)gmail(dot)com
+//
+//     This file is part of SQCT.
+//
+//     SQCT is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Lesser General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     SQCT is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Lesser General Public License for more details.
+//
+//     You should have received a copy of the GNU Lesser General Public License
+//     along with SQCT.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+
 #include "test.h"
 
 #include "appr/normsolver.h"
@@ -330,16 +349,10 @@ void cup_test0()
 
   const bfs_results& br2 = bfs_results::instance();
 
-
-  for( int i = 9; i < 10; ++i )
-  {
-    cout << i << endl;
-    double phi = 1e-3 * M_PI * i * 2;
-    cup cp(phi,120,8);
-    for( int i = 0; i < cp.R.size(); ++i )
-      cout << cp.R[i] << endl;
-
-  }
+  double phi = 0.1;
+  cup cp(phi,121,8);
+  for( int i = 0; i < cp.R.size(); ++i )
+    cout << cp.R[i] << endl;
 }
 
 void cup_test()
