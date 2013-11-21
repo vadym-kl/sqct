@@ -87,10 +87,10 @@ struct grid_iterator
   grid_iterator( const hprr& initial, const hprr& step_offset, const hprr& threshold, long m )
   {
     int rescale_pow = frac_words*sizeof(long)*8;
-    assert( (m/2+1) < 63 );
-    m_big_offset = 1L << (m/2+1);
+    assert( (m/2+ 10) < 63 );
+    m_big_offset = 1L << (m/2+10);
     mpz_class init = to_mpz( ldexp( hprr(m_big_offset) + initial, rescale_pow ) );
-    assert( init >= 0 );
+    //assert( init >= 0 );
     if( init < 0 )
     {
       std::cout << init << std::endl;
