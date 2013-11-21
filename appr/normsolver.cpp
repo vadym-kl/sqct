@@ -24,11 +24,13 @@
 
 #include <cassert>
 
+#define PARI_DEBUG
+
 using namespace std;
 
 normSolver::normSolver()
 {
-  pari_init_opts(40000000l,1l << 32,INIT_DFTm);
+  pari_init_opts(40000000l,1l << 24,INIT_DFTm);
   rnf = gp_read_str("rnfisnorminit(z^2-2,x^2+1)");
   zs2 = gp_read_str("bnfinit(z^2-2)");
 }
@@ -72,7 +74,45 @@ static void genToMpz( GEN gen, mpz_class& out, bool& div )
     out = 0;
 }
 
+void gen_to_pair( GEN re_part, GEN& re_a, GEN& re_b )
+{
+  if( typ(re_part) == t_POLMOD )
+  {
 
+#ifdef PARI_DEBUG
+auto lgsln2 = lg(re_part);
+if( lgsln2 != 3 )
+  throw std::logic_error(__FILE__":6");
+#endif
+
+    if( typ(gel(re_part,2)) == t_POL )
+    {
+      GEN re = gel(re_part,2);
+
+#ifdef PARI_DEBUG
+auto lgre = lg(re_part);
+if( lgre != 3 && lgre != 4 )
+  throw std::logic_error(__FILE__":6");
+#endif
+      if( lg(re) >= 3 )
+        re_a = gel(re,2);
+      if( lg(re) == 4 )
+        re_b = gel(re,3);
+    }
+    else if( typ(gel(re_part,2)) == t_INT )
+    {
+      re_a = gel(re_part,2);
+    }
+    else
+      throw std::logic_error(__FILE__":re2:unexpected");
+  }
+  else if( typ(re_part) == t_INT )
+  {
+    re_a = re_part;
+  }
+  else
+    throw std::logic_error(__FILE__":re:unexpected");
+}
 
 bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> &res) const
 {
@@ -84,6 +124,11 @@ bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> 
   GEN in = gp_read_str(ss.str().c_str());
   GEN solution = rnfisnorm(rnf,in,0);
 
+#ifdef PARI_DEBUG
+  if( lg(solution) != 3 )
+    throw std::logic_error(__FILE__":1");
+#endif
+
   bool ok =  gequal1(gel(solution,2));
   if( !ok ) //there is no solution
   {
@@ -91,44 +136,32 @@ bool normSolver::solve(const ring_int_real<mpz_class>& rhs, ring_int<mpz_class> 
     return false;
   }
 
+#ifdef PARI_DEBUG
+  if( typ(gel(solution,1)) != t_POLMOD )
+    throw std::logic_error(__FILE__":2");
+  if( lg(gel(solution,1)) != 3 )
+    throw std::logic_error(__FILE__":3");
+#endif
+
   GEN re_a = 0, re_b = 0, im_a = 0, im_b = 0;
   GEN sln = gel(gel(solution,1),2);
 
-  if( degree(sln) >= 0 )
-  {
-    if( typ(gel(sln,2)) == t_POLMOD )
-    {
-      GEN re = gel(gel(sln,2),2);
-      if( degree(re) >= 0 )
-        re_a = gel(re,2);
-      if( degree(re) == 1 )
-        re_b = gel(re,3);
-    }
-    else if( typ(gel(sln,2)) == t_INT )
-    {
-      re_a = gel(sln,2);
-    }
-    else
-      throw std::logic_error(__FILE__":re:unexpected");
-  }
 
-  if( degree(sln) == 1 )
-  {
-    if( typ(gel(sln,3)) == t_POLMOD )
-    {
-      GEN im = gel(gel(sln,3),2);
-      if( degree(im) >= 0 )
-        im_a = gel(im,2);
-      if( degree(im) == 1 )
-        im_b = gel(im,3);
-    }
-    else if( typ(gel(sln,3)) == t_INT )
-    {
-      im_a = gel(sln,3);
-    }
-    else
-      throw std::logic_error(__FILE__":im:unexpected");
-  }
+
+#ifdef PARI_DEBUG
+  if( typ(sln) != t_POL )
+    throw std::logic_error(__FILE__":4");
+  auto lgsln = lg(sln);
+  if( lgsln != 3 && lgsln != 4 )
+    throw std::logic_error(__FILE__":5");
+#endif
+
+
+  if( lg(sln) >= 3 )
+    gen_to_pair( gel(sln,2), re_a, re_b );
+
+  if( lg(sln) == 4 )
+    gen_to_pair( gel(sln,3), im_a, im_b );
 
   genToMpz( re_a, res[0] );
   genToMpz( im_a, res[2] );

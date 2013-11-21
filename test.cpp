@@ -514,6 +514,12 @@ void run_tests()
   //min_t_count_test();
   //return;
 
+//  {
+//    const normSolver& ns = normSolver::instance();
+//    ring_int<mpz_class> res;
+//    ns.solve(ring_int_real<mpz_class>(31,12),res);
+//  }
+
   if(false)
   {
     z_factoring_test();
