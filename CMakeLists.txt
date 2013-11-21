@@ -2,8 +2,8 @@ cmake_minimum_required (VERSION 2.6)
 project (sqct)
 add_definitions("-std=c++0x -fopenmp")
 
-INCLUDE_DIRECTORIES(/usr/local/include)
-LINK_DIRECTORIES(/opt/local/lib)
+#INCLUDE_DIRECTORIES(/usr/local/include)
+#LINK_DIRECTORIES(/opt/local/lib)
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 

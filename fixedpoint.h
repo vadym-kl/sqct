@@ -90,7 +90,7 @@ struct grid_iterator
     assert( (m/2+1) < 63 );
     m_big_offset = 1L << (m/2+1);
     mpz_class init = to_mpz( ldexp( hprr(m_big_offset) + initial, rescale_pow ) );
-    assert( init > 0 );
+    assert( init >= 0 );
     m_current = uint_type( init.get_str() );
     m_offset = uint_type( to_mpz( ldexp( step_offset, rescale_pow) ).get_str());
     m_down_threshold = uint_type( to_mpz( ldexp( threshold, rescale_pow) ).get_str() );
