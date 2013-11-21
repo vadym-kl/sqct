@@ -27,7 +27,7 @@ using namespace std;
 std::ostream &operator <<(std::ostream &out, const observations &o)
 {
   out << std::fixed;
-  out.precision(20);
+  out.precision(30);
 
   out << o.n << "," <<
       to_ld(o.phi) << "," <<

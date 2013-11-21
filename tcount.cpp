@@ -206,7 +206,10 @@ string min_unitaries::short_title()
 string min_unitaries::short_str() const
 {
   stringstream ss;
-  ss << x << "," << y << "," << m << "," << k << "," << y.size();
+  if( y.size() > 0 )
+    ss << x << "," << y[0] << "," << m << "," << k << "," << y.size();
+  else
+    ss << x << "," <<  "{0,0,0,0}" << "," << m << "," << k << "," << y.size();
   return ss.str();
 }
 

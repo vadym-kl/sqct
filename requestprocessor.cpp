@@ -32,7 +32,7 @@ typedef void request_processor( const vector<string>& request );
 
 void process_pow2_request( const vector<string>& request )
 {
-  if( request.size() < 6 + 1 )
+  if( request.size() < 6 )
   {
     cout << "not enough parameters" << endl;
     return;
@@ -57,7 +57,7 @@ void process_pow2_request( const vector<string>& request )
   {
     hprr phi = hprHelpers::pi() / pow2(k);
     stringstream astr;
-    astr << "\"Pi/(2^" << k << ")\"" << endl;
+    astr << "\"Pi/(2^" << k << ")\"" ;
     cup_params cp{phi,Tcount_max,cup_params::default_max_lookup,astr.str(),filename};
     cup c(cp);
   }
@@ -65,7 +65,7 @@ void process_pow2_request( const vector<string>& request )
 
 void process_uniform_request( const vector<string>& request )
 {
-  if( request.size() < 7 + 1 )
+  if( request.size() < 7 )
   {
     cout << "not enough parameters" << endl;
     return;
@@ -93,7 +93,7 @@ void process_uniform_request( const vector<string>& request )
   {
     hprr phi = hprr(2)*hprHelpers::pi()*hprr(k) / hprr(n);
     stringstream astr;
-    astr << "\"2*Pi*" << k << "/" << n << "\"" << endl;
+    astr << "\"2*Pi*" << k << "/" << n << "\"";
     cup_params cp{phi,Tcount_max,cup_params::default_max_lookup,astr.str(),filename};
     cup c(cp);
   }

@@ -75,13 +75,27 @@ std::string ciruit_str( const matrix2x2<mpz_class>& m )
   auto cost = gateLibrary::toCliffordT(res.count());
   stringstream ss;
 
+  ss << "\"";
   res.toMathStream(ss);
-  ss << "," << cost[gateLibrary::T] << ","
+  ss << "\"," << cost[gateLibrary::T] << ","
      << cost[gateLibrary::H] << ","
      << cost[gateLibrary::P] << ","
      << cost[gateLibrary::X] << ","
      << cost[gateLibrary::Y] << ","
      << cost[gateLibrary::Z] ;
+  return ss.str();
+}
+
+std::string ciruit_str_empty()
+{
+  stringstream ss;
+
+  ss << "Id,0,"
+     << "0" << ","
+     << "0" << ","
+     << "0" << ","
+     << "0" << ","
+     << "0" ;
   return ss.str();
 }
 
@@ -99,15 +113,18 @@ void write_title( const cup_params& params, ostream& ofs )
 
 void write_line( int t_count, const cup_params& params, ostream& ofs, const typename cup::result_t& res, observations& obs )
 {
+  ofs << "{";
+  ofs << params.angle_str << ",";
   ofs << fixed;
   ofs.precision(30);
-  ofs << "{";
-  ofs << params.angle_str << "," <<
-         params.phi << "," <<
+  ofs << to_ld(params.phi) << "," <<
          t_count << "," <<
          res.first << "," <<
-         "{" << res.second.short_str() << "}," <<
-         ciruit_str(res.second) << ",";
+         "{" << res.second.short_str() << "},";
+  if( res.second.y.empty() )
+     ofs << ciruit_str_empty() << ",";
+  else
+     ofs << ciruit_str(res.second) << ",";
   ofs << obs << "}" << endl;
 }
 
@@ -120,7 +137,7 @@ cup::cup(const cup_params &params)  :
 
   const bfs_results& br = bfs_results::instance();
 
-  ofstream ofs(params.results_file);
+  ofstream ofs(params.results_file,ios_base::app);
 
   {
     ofstream ofst(params.results_file + ".title");

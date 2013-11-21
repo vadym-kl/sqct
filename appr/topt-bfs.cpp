@@ -215,9 +215,10 @@ string bfs_results::filename( int layer )
 const bfs_results &bfs_results::instance()
 {
   static bfs_results res;
-  ifstream ifs(filename(0)+".uni");
-  if( ifs )
+  ifstream ifs(filename(0)+".uni.bin");
+  if( ifs.is_open() )
   {
+    ifs.close();
     res.load();
   }
   else
