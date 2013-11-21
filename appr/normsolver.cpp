@@ -28,7 +28,7 @@ using namespace std;
 
 normSolver::normSolver()
 {
-  pari_init(8000000l * 128l, 500509);
+  pari_init_opts(40000000l,1l << 32,INIT_DFTm);
   rnf = gp_read_str("rnfisnorminit(z^2-2,x^2+1)");
   zs2 = gp_read_str("bnfinit(z^2-2)");
 }
