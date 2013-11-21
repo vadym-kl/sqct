@@ -91,6 +91,11 @@ struct grid_iterator
     m_big_offset = 1L << (m/2+1);
     mpz_class init = to_mpz( ldexp( hprr(m_big_offset) + initial, rescale_pow ) );
     assert( init >= 0 );
+    if( init < 0 )
+    {
+      std::cout << init << std::endl;
+      throw std::logic_error("fail");
+    }
     m_current = uint_type( init.get_str() );
     m_offset = uint_type( to_mpz( ldexp( step_offset, rescale_pow) ).get_str());
     m_down_threshold = uint_type( to_mpz( ldexp( threshold, rescale_pow) ).get_str() );
