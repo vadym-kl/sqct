@@ -108,7 +108,6 @@ void process_angles_request( const vector<string>& request )
     cout << "not enough parameters" << endl;
     return;
   }
-  cout << "Scheduled approximation of R_z(Pi/2^k)" << endl;
 
   int Tcount_min = 0;
   int Tcount_max = 80;
