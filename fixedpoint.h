@@ -101,8 +101,14 @@ struct grid_iterator
     m_down_threshold = uint_type( to_mpz( ldexp( threshold, rescale_pow) ).get_str() );
     uint_type one(uint_type(1) << rescale_pow);
     m_up_threshold = one - m_down_threshold;
-    assert(m_down_threshold >= 0 && m_down_threshold <= one );
-    assert(m_up_threshold >= 0 && m_up_threshold <= one );
+
+    if( m_up_threshold == one )
+    {
+      m_up_threshold = one - uint_type(1);
+    }
+
+    assert(m_down_threshold >= 0 && m_down_threshold < one );
+    assert(m_up_threshold >= 0 && m_up_threshold < one );
   }
 
   void operator++()
