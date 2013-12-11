@@ -44,7 +44,7 @@ cup::cup(const hprr &phi, int max_layer, int max_lookup)  :
       R[i].first = trace_dist(Rz(phi),matrix2x2<mpz_class>(R[i].second));
   }
 
-  bool verbose = true;
+  bool verbose = false;
 
   if( verbose )
     cout << "{" << observations::title() << "}," << endl;

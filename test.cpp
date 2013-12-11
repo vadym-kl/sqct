@@ -339,9 +339,10 @@ void top_bfs_test2()
 bool deq( double a, double b )
 {
   const double prec = 1e-7;
+  const double prec2 = 1e-15;
   const double low = 1. - prec;
   const double high = 1. + prec;
-  return a <= b * high && a >= b * low;
+  return (a <= b * high && a >= b * low) || (abs(a) <= prec2 && abs(b) <= prec2);
 }
 
 void cup_test0()
@@ -373,7 +374,7 @@ void cup_test()
     cout << i << endl;
     double phi = 1e-3 * M_PI * i * 2;
     auto r = br2.cup(phi);
-    cup cp(phi,19,8);
+    cup cp(phi,bfs_results::max_cost,4);
     assert( r.size() == cp.R.size() );
     for( size_t k = 0; k < r.size(); ++k )
     {
@@ -384,6 +385,7 @@ void cup_test()
       if( ! (cnd1 && cnd2) )
       {
         cout << k << "," << phi << endl;
+        bool cnd3 = deq(r[k].first,cp.R[k].first);
         cout << r[k] << endl;
         cout << cp.R[k] << endl;
         throw std::logic_error("test failed");

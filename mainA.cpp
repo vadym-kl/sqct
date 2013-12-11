@@ -92,11 +92,11 @@ int main(int ac, char* av[])
              "Produce help message, see help <option name> for more details "
              "about specific option.")
 
-            ("test,T", po::value< string >(&(file_name))->implicit_value("generic"),
-             "Run tests")
+//            ("test,T", po::value< string >(&(file_name))->implicit_value("generic"),
+//             "Run tests")
 
             ("bfs,B", po::value< string >(&(file_name))->implicit_value("generic"),
-             "Run BFS for T-optimal circuits")
+             "Test that BFS and implemented algorithm produce the same results")
 
             ("gen,G", po::value< string >(&(file_name))->implicit_value("in.txt"),
              "Run unitaries approximation. Example: -G in ")
@@ -116,13 +116,14 @@ int main(int ac, char* av[])
         if( vm.count("bfs") ) {
             bfs_results br;
             br.get();
+            cup_test();
             return 0;
         }
 
-        if( vm.count("test") ) {
-            run_tests();
-            return 0;
-        }
+//        if( vm.count("test") ) {
+//            run_tests();
+//            return 0;
+//        }
 
         if( vm.count("help") ) {
             print_help(help_topic);
