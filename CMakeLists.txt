@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project (sqct)
-add_definitions("-std=c++0x -fopenmp")
+add_definitions("-std=c++11 -fopenmp")
 
 #INCLUDE_DIRECTORIES(/usr/local/include)
 #LINK_DIRECTORIES(/opt/local/lib)
@@ -8,8 +8,11 @@ INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG ")
-set( CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
-set(Boost_USE_STATIC_LIBS ON)
+option(StaticLink "StaticLink" ON)
+if (StaticLink)
+  set(CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
+  set(Boost_USE_STATIC_LIBS ON)
+endif(StaticLink)
 
 add_executable(sqctSK
  hprhelpers.cpp

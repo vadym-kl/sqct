@@ -50,7 +50,7 @@ struct float_index_entry
 {
   std::pair<double,double> x;
   int k;
-  long id;
+  size_t id;
 };
 
 struct bfs_results

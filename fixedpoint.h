@@ -31,6 +31,7 @@
 using boost::multiprecision::backends::cpp_int_backend;
 using boost::multiprecision::signed_magnitude;
 using boost::multiprecision::unchecked;
+using boost::math::isnan;
 
 
 
