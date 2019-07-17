@@ -31,6 +31,7 @@
 #include <fstream>
 #include <sstream>
 #include <chrono>
+#include <random>
 
 #include <boost/program_options.hpp>
 #include <boost/timer/timer.hpp>

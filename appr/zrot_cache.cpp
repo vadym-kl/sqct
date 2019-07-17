@@ -91,7 +91,7 @@ void zrot_cache::read_file(const std::string &filename)
   }
 }
 
-circuit zrot_cache::lookup(const symbolic_angle &angle, double precision) const throw ( not_found_exception )
+circuit zrot_cache::lookup(const symbolic_angle &angle, double precision) const 
 {
   auto it = find(angle);
   if ( it == end() )

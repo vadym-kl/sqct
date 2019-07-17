@@ -1,15 +1,17 @@
 cmake_minimum_required (VERSION 2.6)
 project (sqct)
-add_definitions("-std=c++0x -fopenmp")
+add_definitions("-std=c++17 -fopenmp")
 
 #INCLUDE_DIRECTORIES(/usr/local/include)
 #LINK_DIRECTORIES(/opt/local/lib)
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} )
 
+find_package(OpenMP REQUIRED) # Find the package
+#target_link_libraries(${PROJECT_NAME} ${OpenMP_CXX_LIBRARIES}) # Link against it for C++
 
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG ")
-set( CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
-set(Boost_USE_STATIC_LIBS ON)
+#set( CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
+#set(Boost_USE_STATIC_LIBS ON)
 
 add_executable(sqctSK
  hprhelpers.cpp
@@ -90,8 +92,8 @@ MESSAGE("Used boost libraries:")
 MESSAGE("${Boost_LIBRARIES}")
 
 target_link_libraries(sqct ${Boost_LIBRARIES})
-target_link_libraries(sqct gomp pthread pari mpfr gmpxx gmp rt )
+target_link_libraries(sqct ${OpenMP_CXX_LIBRARIES} pthread pari mpfr gmpxx gmp rt )
 
 target_link_libraries(sqctSK ${Boost_LIBRARIES})
-target_link_libraries(sqctSK gomp pthread mpfr gmpxx gmp rt)
+target_link_libraries(sqctSK ${OpenMP_CXX_LIBRARIES} pthread mpfr gmpxx gmp rt)
 

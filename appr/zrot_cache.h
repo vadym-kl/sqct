@@ -48,7 +48,7 @@ struct zrot_cache : public std::map< symbolic_angle, step_function >
   // loads cached data from file
   void read_file( const std::string& filename );
   // looks up approximation
-  circuit lookup(const symbolic_angle& angle, double precision ) const throw ( not_found_exception ) ;
+  circuit lookup(const symbolic_angle& angle, double precision ) const ;
   bool recalculate;
 };
 
